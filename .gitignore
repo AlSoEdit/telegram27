@@ -1,1 +1,3 @@
-ECHO is on.
+.idea/
+node_modules/
+public/
