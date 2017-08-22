@@ -1,10 +1,14 @@
 const express = require('express');
+const expressSession = require('express-session');
 const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const passport = require('./libs/passport');
 
+const config = require('config');
 const index = require('./routes/index');
+const user = require('./routes/user');
 
 const app = express();
 
@@ -17,7 +21,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(expressSession(config.sessionConfig));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/', index);
+app.use('/', user);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -33,8 +42,9 @@ app.use(function (err, req, res, next) {
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
     // render the error page
-    res.status(err.status || 500);
-    res.render('error');
+    res
+        .status(err.status || 500)
+        .send(err.message);
 });
 
 module.exports = app;

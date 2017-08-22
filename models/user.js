@@ -8,14 +8,14 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     login: {
         type: String,
-        required: [true, errors.fieldRequired('login')],
+        required: true,
         index: true,
         unique: true
     },
 
     password: {
         type: String,
-        required: [true, errors.fieldRequired('password')]
+        required: true
     },
 
     friends: [{
@@ -32,6 +32,10 @@ const userSchema = new Schema({
 userSchema.statics.create = async function ({login, password}) {
     if (await User.findOne({login})) {
         throw new Error(errors.uniqueFieldAlreadyExists('login'));
+    } else if (!login) {
+        throw new Error(errors.fieldRequired('login'));
+    } else if (!password) {
+        throw new Error(errors.fieldRequired('password'));
     }
 
     const user = new this({login, password});

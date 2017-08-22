@@ -28,7 +28,7 @@ describe('models : User', () => {
             try {
                 await User.create({password: 'p'});
             } catch (err) {
-                err.errors.login.message.should.equal(errors.fieldRequired('login'));
+                err.message.should.equal(errors.fieldRequired('login'));
             }
         });
 
@@ -36,7 +36,7 @@ describe('models : User', () => {
             try {
                 await User.create({login: 'p'});
             } catch (err) {
-                err.errors.password.message.should.equal(errors.fieldRequired('password'));
+                err.message.should.equal(errors.fieldRequired('password'));
             }
         });
 
