@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
 
 const app = require('./app');
-const https = require('https');
+const http = require('http');
 const config = require('config');
 
 const port = config.port;
 
 app.set('port', port);
-const server = https.createServer(app);
+const server = http.createServer(app);
 
 server.listen(port);
 server.on('error', err => console.error(err));

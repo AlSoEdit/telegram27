@@ -9,27 +9,32 @@ const passport = require('./libs/passport');
 const config = require('config');
 const index = require('./routes/index');
 const user = require('./routes/user');
+const userController = require('./controllers/user');
 
 const app = express();
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jsx');
+// app.engine('jsx', require('express-react-views').createEngine());
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(expressSession(config.sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 app.use('/', index);
 app.use('/', user);
+app.use(userController.setAuthState);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     const err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -37,14 +42,16 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
+    const { message } = err;
+
     // set locals, only providing error in development
-    res.locals.message = err.message;
+    res.locals.message = message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // render the error page
+    const isAuthenticated = req.user !== undefined;
     res
         .status(err.status || 500)
-        .send(err.message);
+        .json(JSON.stringify({ message, isAuthenticated }));
 });
 
 module.exports = app;

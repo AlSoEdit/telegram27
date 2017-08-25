@@ -11,7 +11,8 @@ async function signUp(req, res, next) {
 
     try {
         await User.create({login, password});
-        res.status(httpStatusCodes.OK).send();
+        res.status(httpStatusCodes.OK);
+        next();
     } catch (err) {
         next(new BadRequestError(err.message));
     }
@@ -26,12 +27,19 @@ function signIn(req, res, next) {
         if (!user) {
             next(new BadRequestError(errors.wrongLoginOrPassword));
         } else {
-            req.logIn(user, () => res.status(httpStatusCodes.OK).send());
+            req.logIn(user, next);
         }
     })(req, res, next);
 }
 
+function setAuthState(req, res) {
+    const json = JSON.stringify({isAuthenticated: req.user !== undefined});
+
+    res.json(json);
+}
+
 module.exports = {
     signUp,
-    signIn
+    signIn,
+    setAuthState
 };

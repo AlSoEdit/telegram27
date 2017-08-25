@@ -8,7 +8,7 @@ mongoose.Promise = global.Promise;
 db.once('open', () => {});
 
 db.on('error', err => {
-    console.error(err);
+    console.error(err.message);
     console.info('Close app');
     process.exit(1);
 });
