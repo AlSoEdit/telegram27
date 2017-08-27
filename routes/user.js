@@ -6,6 +6,7 @@ const userController = require('../controllers/user');
 
 router
     .post('/signup', userController.signUp)
+    .post('/signout', userController.passIfAuthenticated, userController.signOut)
     .post('/signin', userController.signIn);
 
 module.exports = router;

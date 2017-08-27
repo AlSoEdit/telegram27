@@ -10,11 +10,19 @@ async function signUp(req, res, next) {
     const { login, password } = req.body;
 
     try {
-        await User.create({login, password});
+        await User.create({ login, password });
         res.status(httpStatusCodes.OK);
         next();
     } catch (err) {
         next(new BadRequestError(err.message));
+    }
+}
+
+function passIfAuthenticated(req, res, next) {
+    if (!req.user) {
+        next(new BadRequestError(errors.notAuthenticated));
+    } else {
+        next();
     }
 }
 
@@ -32,6 +40,12 @@ function signIn(req, res, next) {
     })(req, res, next);
 }
 
+function signOut(req, res) {
+    req.session.destroy();
+    req.logout();
+    res.json(JSON.stringify({ isAuthenticated: false }));
+}
+
 function setAuthState(req, res) {
     const json = JSON.stringify({isAuthenticated: req.user !== undefined});
 
@@ -41,5 +55,7 @@ function setAuthState(req, res) {
 module.exports = {
     signUp,
     signIn,
-    setAuthState
+    setAuthState,
+    signOut,
+    passIfAuthenticated
 };

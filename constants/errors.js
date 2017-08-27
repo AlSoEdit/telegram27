@@ -8,5 +8,6 @@ module.exports = {
     cannotAddMessageIfNotParticipant: 'Can not add message to dialog if you not participate in it',
     cannotDeleteFriendIfNotFriends: 'Can not delete friend if not friends',
     alreadyAuthenticated: 'Already authenticated',
-    wrongLoginOrPassword: 'Wrong login or password'
+    wrongLoginOrPassword: 'Wrong login or password',
+    notAuthenticated: 'Not authenticated'
 };

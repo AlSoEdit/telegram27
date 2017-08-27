@@ -1,0 +1,21 @@
+.auth-form {
+    display: flex;
+    margin: 5px 0;
+    flex-direction: column;
+    min-width: 200px;
+    text-align: center;
+}
+
+.form-input.input-submit {
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    background-color: #6BA1FF;
+}
+
+.form-input.input-submit:hover {
+    background-color: rgba(107, 161, 255, .9);
+}
+
+.form-input.input-submit:focus {
+    background-color: #6BA1FF;
+}

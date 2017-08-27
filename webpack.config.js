@@ -18,7 +18,9 @@ module.exports = {
         proxy: {
             '/sign.*?': {
                 target: 'http://localhost:8080',
-                secure: false
+                bypass: function(req) {
+                    return req.method === 'post';
+                }
             }
         }
     },

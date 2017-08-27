@@ -1,0 +1,16 @@
+.form-input {
+    background-color: #ffffff;
+    color: #332;
+    min-height: 25px;
+    padding: 0 0;
+    max-width: 200px;
+    border: .5px solid #6E7BFF;
+    border-radius: 1.5px;
+    margin: 5px 0;
+    display: block;
+    text-align: center;
+}
+
+.form-input:focus {
+    background: rgba(161, 198, 255, .15);
+}

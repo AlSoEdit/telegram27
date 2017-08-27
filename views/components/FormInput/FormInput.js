@@ -2,6 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import './FormInput.css';
 
 export default class FormInput extends React.Component {
     constructor(props) {
@@ -13,29 +14,26 @@ export default class FormInput extends React.Component {
     handleChange(e) {
         const { value } = e.target;
         this.setState({ value });
-
-        this.props.parentHandler(e);
+        this.props.onChange(e);
     }
 
     render() {
         const { valueName } = this.props;
 
         return (
-            <div>
-                <input
-                    name={valueName}
-                    className="form-element"
-                    placeholder={valueName}
-                    value={this.state[valueName]}
-                    type={valueName}
-                    onChange={this.handleChange}
-                />
-            </div>
+            <input
+                className="form-input"
+                name={valueName}
+                placeholder={valueName}
+                value={this.state[valueName]}
+                type={valueName}
+                onChange={this.handleChange}
+            />
         );
     }
 }
 
 FormInput.propTypes = {
     valueName: PropTypes.string.isRequired,
-    parentHandler: PropTypes.func, // TODO: Remove parentHandler
+    onChange: PropTypes.func
 };

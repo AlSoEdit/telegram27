@@ -2,27 +2,32 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { NavLink } from 'react-router-dom';
+
+import './Header.css';
 
 export default class Header extends React.Component {
     constructor(props) {
         super(props);
-
-        const { buttons } = this.props;
-        this.state = {
-            buttons
-        };
     }
 
     render() {
-        return null;
+        return (
+            <header className="header">
+                <span className="header-title">chat</span>
+                {/*<div className="links-wrapper">*/}
+                {this.props.linksComponent}
+                {/*</div>*/}
+            </header>
+        );
     }
 }
 
 Header.propTypes = {
-    buttons: PropTypes.arrayOf(
+    links: PropTypes.arrayOf(
         PropTypes.shape({
-            name: PropTypes.string,
-            onClick: PropTypes.func
+            url: PropTypes.string,
+            text: PropTypes.string
         })
     )
 };

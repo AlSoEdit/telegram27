@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+}
+
+.main {
+    font: 20px "Helvetica", sans-serif;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main,
+.routes-container
+{
+    display: flex;
+    justify-content: space-between;
+}
