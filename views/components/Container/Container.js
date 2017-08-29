@@ -3,7 +3,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 
-import './ButtonsContainer.css';
+import './Container.css';
 
 export default class ButtonsContainer extends React.Component {
     constructor(props) {
@@ -12,13 +12,13 @@ export default class ButtonsContainer extends React.Component {
 
     render() {
         return (
-            <div className="buttons-container">
-                {this.props.buttons}
+            <div className="container">
+                {this.props.components}
             </div>
         );
     }
 }
 
 ButtonsContainer.propTypes = {
-    buttons: PropTypes.element
+    components: PropTypes.element
 };

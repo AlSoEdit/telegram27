@@ -3,12 +3,8 @@
 const mongoose = require('../libs/mongoDB');
 
 module.exports = {
-    removeAll() {
-        const collections = mongoose.connection.collections;
-        const promises = Object
-            .keys(collections)
-            .map(k => collections[k].remove({}));
-
-        return Promise.all(promises);
+    async removeAll() {
+        await mongoose.connection.dropDatabase();
+        console.info('DB cleared');
     }
 };

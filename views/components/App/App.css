@@ -4,13 +4,8 @@ body {
 
 .main {
     font: 20px "Helvetica", sans-serif;
+    display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.main,
-.routes-container
-{
-    display: flex;
     justify-content: space-between;
 }

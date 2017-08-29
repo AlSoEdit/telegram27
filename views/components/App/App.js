@@ -1,50 +1,63 @@
 'use strict';
 
 import React from 'react';
-import Form from '../Form/Form';
+import { BrowserRouter, Route } from 'react-router-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+
+import allReducers from '../../reducers';
+
 import Header from '../Header/Header';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import { BrowserRouter, Route, NavLink } from 'react-router-dom';
+import Profile from '../Profile/Profile';
 
 import './App.css';
+import Form from '../Form/Form';
+
+const store = createStore(allReducers);
 
 const notAuthenticatedNav = [
     {
-        requestUrl: '/signin',
+        url: '/signin',
         allPaths: ['/signin', '/'],
         text: 'Sign In',
+        method: 'post',
         fields: ['login', 'password']
     },
     {
-        requestUrl: '/signup',
+        url: '/signup',
         allPaths: ['/signup'],
         text: 'Sign Up',
+        method: 'post',
         fields: ['login', 'password']
     }
 ];
 
 const authenticatedNav = [
     {
-        requestUrl: '/profile',
+        url: '/profile',
         text: 'Profile',
+        method: 'get',
         allPaths: ['/', '/profile']
     },
     {
-        requestUrl: '/signout',
-        text: 'Sign Out'
+        url: '/signout',
+        text: 'Sign Out',
+        method: 'post'
     }
 ];
 
 const fetchOptions = {
     method: 'post',
-    credentials: 'same-origin'
+    credentials: 'same-origin',
+    'Content-Type': 'application/json',
+    Accept: 'application/json'
 };
 
 export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
-        this.logoutRequest = this.logoutRequest.bind(this);
+        this.onSubmitRequest = this.onSubmitRequest.bind(this);
 
         this.state = {
             isAuthenticated: false,
@@ -52,76 +65,53 @@ export default class App extends React.Component {
         };
     }
 
-    onSubmit(errorText, isAuthenticated) {
+    onSubmit(isAuthenticated) {
         this.setState({
-            errorText,
             isAuthenticated
         });
     }
 
-    async logoutRequest(e) {
+    async onSubmitRequest(e) {
         e.preventDefault();
 
-        const res = await fetch(e.target.action, fetchOptions);
-        const body = JSON.parse(await res.json());
-        const { isAuthenticated } = body;
-        const message = body.message || '';
+        const options = Object.assign(fetchOptions, { method: e.target.method });
+        const res = await fetch(e.target.action, options);
+        const { isAuthenticated } = await res.json();
 
-        this.onSubmit(message, isAuthenticated);
+        this.onSubmit(isAuthenticated);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const errorTextChanged = this.state.errorText !== nextState.errorText;
-        const authStatusChanged = this.state.isAuthenticated !== nextState.isAuthenticated;
-
-        return errorTextChanged || authStatusChanged;
+        return this.state.isAuthenticated !== nextState.isAuthenticated;
     }
 
     render() {
-        const { isAuthenticated, errorText } = this.state;
+        const { isAuthenticated } = this.state;
         const links = isAuthenticated ? authenticatedNav : notAuthenticatedNav;
 
-        const linksComponent = isAuthenticated ? (
-            links.map(l =>
-                <form method="post" className="links-wrapper" action={l.requestUrl} onSubmit={this.logoutRequest}>
-                    <input className="nav-link" type="submit" value={l.text}></input>
-                </form>
-            )
-        ) : (
-            <div className="links-wrapper">
-                {links.map(l => <NavLink className="nav-link" to={l.requestUrl}>{l.text}</NavLink>)}
-            </div>
+        const routes = !isAuthenticated && notAuthenticatedNav.map(s => <Route
+                exact
+                path={s.url}
+                render={() =>
+                    <Form
+                        isAuthenticated={isAuthenticated}
+                        onSubmit={this.onSubmit}
+                        formData={s}
+                    />
+                }
+            />
         );
 
-        const routes = !isAuthenticated && notAuthenticatedNav.reduce((acc, s) =>
-            acc.concat(
-                s.allPaths.map(p =>
-                    <Route
-                        exact
-                        path={p}
-                        render={() =>
-                                <Form
-                                isAuthenticated={this.state.isAuthenticated}
-                                onSubmit={this.onSubmit}
-                                actionUrl={s.requestUrl}
-                                inputsNames={s.fields}
-                                submitText={s.text}
-                            />
-                        }
-                    />
-                )
-        ), []);
-
         return (
-            <BrowserRouter>
-                <div className="main">
-                    <Header linksComponent={linksComponent}/>
-                    <ErrorMessage errorText={errorText}/>
-                    <div className="routes-container">
+            <Provider store={store}>
+                <BrowserRouter>
+                    <div className="main">
+                        <Header links={links} isAuthenticated={isAuthenticated} onSubmit={this.onSubmitRequest}/>
+                        { isAuthenticated && <Profile/> }
                         {routes}
                     </div>
-                </div>
-            </BrowserRouter>
+                </BrowserRouter>
+            </Provider>
         );
     }
 }

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import './Form.css';
 
-import FormInput from '../FormInput/FormInput';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 const fetchOptions = {
     headers: {
@@ -22,76 +22,88 @@ export default class Form extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
+        const inputValues = this.props.formData.fields
+            .reduce((acc, v) => {
+                acc[v] = '';
+
+                return acc;
+            }, {});
+
         this.state = {
-            isAuthenticated: props.isAuthenticated
+            errorText: '',
+            inputValues
         };
     }
 
     async onSubmit(e) {
         e.preventDefault();
+        this.setState({ errorText: '' });
 
-        const body = JSON.stringify(
-            this.props.inputsNames.reduce((acc, e) => {
-                acc[e] = this.state[e];
+        const { url } = this.props.formData;
+        const body = JSON.stringify(this.state.inputValues);
 
-                return acc;
-            }, {})
-        );
         const options = { body, ...fetchOptions };
-
-        const res = await fetch(this.props.actionUrl, options);
-        const { message, isAuthenticated } = JSON.parse(await res.json());
+        const res = await fetch(url, options);
+        const { message, isAuthenticated } = await res.json();
         const errorText = res.status !== 200 ? message : '';
 
-        this.props.onSubmit(errorText, isAuthenticated);
+        this.setState({ errorText });
+        this.props.onSubmit(isAuthenticated);
     }
 
     onChange(e) {
         const { name, value } = e.target;
-        this.setState({ [name]: value });
-    }
+        const newValues = Object.assign(this.state.inputValues, { [name]: value });
 
-    componentWillReceiveProps(nextProps) {
-        const { isAuthenticated } = nextProps;
-        if (isAuthenticated !== this.state.isAuthenticated) {
-            this.setState({ isAuthenticated });
-        }
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        const isAuthenticated = this.state;
-
-        return isAuthenticated !== nextProps.isAuthenticated || isAuthenticated !== nextState.isAuthenticated;
+        this.setState({
+            inputValues: newValues
+        });
     }
 
     render() {
-        const inputs = this.props.inputsNames.map(valueName => (
-            <FormInput valueName={valueName} onChange={this.onChange}/>
+        const { fields, method, text } = this.props.formData;
+        const inputs = fields.map(valueName => (
+            <input
+                className="form__input"
+                name={valueName}
+                placeholder={valueName}
+                value={this.state.inputValues[valueName]}
+                type={valueName}
+                onChange={this.onChange}
+            />
         ));
 
         return (
-            <form
-                className="auth-form"
-                method="post"
-                onSubmit={this.onSubmit}
-            >
-
-                {inputs}
-
-                <input className="input-submit form-input" type="submit" value={this.props.submitText}/>
-            </form>
+            <div>
+                <ErrorMessage errorText={this.state.errorText}/>
+                <form
+                    className="form"
+                    method={method}
+                    onSubmit={this.onSubmit}
+                >
+                    {inputs}
+                    <input
+                        className="form__input form__input--type-submit"
+                        type="submit"
+                        value={text}
+                    />
+                </form>
+            </div>
         );
     }
 }
 
 Form.propTypes = {
-    actionUrl: PropTypes.string.isRequired,
     isAuthenticated: PropTypes.bool.isRequired,
-    onSubmit: PropTypes.func,
-    inputsNames: PropTypes.arrayOf(PropTypes.string).isRequired,
-    submitText: PropTypes.string
+    onSubmit: PropTypes.func.isRequired,
+    formData: PropTypes.shape({
+        url: PropTypes.string.isRequired,
+        fields: PropTypes.arrayOf(PropTypes.string).isRequired,
+        text: PropTypes.string,
+        method: PropTypes.string.isRequired
+    })
 };
 
 Form.defaultValues = {
-    submitText: 'submit'
+    text: 'submit'
 };

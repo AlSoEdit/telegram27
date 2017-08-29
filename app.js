@@ -28,10 +28,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-
-app.use('/', index);
-app.use('/', user);
 app.use(userController.setAuthState);
+app.use('/', user);
+app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -48,10 +47,11 @@ app.use(function (err, req, res, next) {
     res.locals.message = message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    const isAuthenticated = req.user !== undefined;
+    res.locals.answer.message = message;
+
     res
         .status(err.status || 500)
-        .json(JSON.stringify({ message, isAuthenticated }));
+        .json(res.locals.answer);
 });
 
 module.exports = app;

@@ -38,7 +38,7 @@ userSchema.statics.create = async function ({ login, password }) {
         throw new Error(errors.fieldRequired('password'));
     }
 
-    const user = new this({login, password});
+    const user = new this({ login, password });
 
     return user.save();
 };

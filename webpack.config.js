@@ -21,6 +21,9 @@ module.exports = {
                 bypass: function(req) {
                     return req.method === 'post';
                 }
+            },
+            '/profile': {
+                target: 'http://localhost:8080'
             }
         }
     },
