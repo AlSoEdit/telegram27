@@ -94,7 +94,6 @@ export default class Form extends React.Component {
 }
 
 Form.propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
     formData: PropTypes.shape({
         url: PropTypes.string.isRequired,

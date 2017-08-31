@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 import './Header.css';
-import Container from '../Container/Container';
 
 export default class Header extends React.Component {
     constructor(props) {
@@ -29,7 +28,9 @@ export default class Header extends React.Component {
         return (
             <header className="header">
                 <span className="header-title">chat</span>
-                <Container components={components}/>
+                <div className="container">
+                    {components}
+                </div>
             </header>
         );
     }

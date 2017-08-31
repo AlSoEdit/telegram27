@@ -2,18 +2,12 @@
 
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-
-import allReducers from '../../reducers';
 
 import Header from '../Header/Header';
 import Profile from '../Profile/Profile';
 
 import './App.css';
 import Form from '../Form/Form';
-
-const store = createStore(allReducers);
 
 const notAuthenticatedNav = [
     {
@@ -103,15 +97,13 @@ export default class App extends React.Component {
         );
 
         return (
-            <Provider store={store}>
-                <BrowserRouter>
-                    <div className="main">
-                        <Header links={links} isAuthenticated={isAuthenticated} onSubmit={this.onSubmitRequest}/>
-                        { isAuthenticated && <Profile/> }
-                        {routes}
-                    </div>
-                </BrowserRouter>
-            </Provider>
+            <BrowserRouter>
+                <div className="main">
+                    <Header links={links} isAuthenticated={isAuthenticated} onSubmit={this.onSubmitRequest}/>
+                    { isAuthenticated && <Profile/> }
+                    {routes}
+                </div>
+            </BrowserRouter>
         );
     }
 }
