@@ -9,5 +9,6 @@ module.exports = {
     cannotDeleteFriendIfNotFriends: 'Can not delete friend if not friends',
     alreadyAuthenticated: 'Already authenticated',
     wrongLoginOrPassword: 'Wrong login or password',
-    notAuthenticated: 'Not authenticated'
+    notAuthenticated: 'Not authenticated',
+    alreadyFriends: 'Already in friends list'
 };

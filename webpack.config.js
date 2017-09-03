@@ -14,6 +14,7 @@ module.exports = {
     devServer: {
         inline: true,
         port: 3000,
+        historyApiFallback: true,
         host: 'localhost',
         proxy: {
             '/sign.*?': {
@@ -23,6 +24,18 @@ module.exports = {
                 }
             },
             '/profile': {
+                target: 'http://localhost:8080'
+            },
+            '/friend': {
+                target: 'http://localhost:8080'
+            },
+            '/dialog': {
+                target: 'http://localhost:8080'
+            },
+            '/dialogs': {
+                target: 'http://localhost:8080'
+            },
+            '/message': {
                 target: 'http://localhost:8080'
             }
         }

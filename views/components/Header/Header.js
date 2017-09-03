@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 import './Header.css';
+import Form from '../Form/Form';
 
 export default class Header extends React.Component {
     constructor(props) {
@@ -12,22 +13,18 @@ export default class Header extends React.Component {
     }
 
     render() {
-        const { links } = this.props;
-        const components = this.props.isAuthenticated ? (
-            links.map(l =>
-                <form method={l.method} action={l.url} onSubmit={this.props.onSubmit}>
-                    <input className="nav-link" type="submit" value={l.text}/>
-                </form>
-            )
-        ) : (
-            links.map(l =>
-                <NavLink className="nav-link" to={l.url}>{l.text}</NavLink>
-            )
+        const components = this.props.links.map(l =>
+            <NavLink
+                className="nav-link"
+                to={l.url}
+            >
+                {l.text}
+            </NavLink>
         );
 
         return (
             <header className="header">
-                <span className="header-title">chat</span>
+                <span className="header-title">{this.props.title}</span>
                 <div className="container">
                     {components}
                 </div>
@@ -37,8 +34,8 @@ export default class Header extends React.Component {
 }
 
 Header.propTypes = {
-    isAuthenticated: PropTypes.bool,
-    onSubmit: PropTypes.bool,
+    onSubmit: PropTypes.func.isRequired,
+    title: PropTypes.string,
     links: PropTypes.arrayOf(
         PropTypes.shape({
             url: PropTypes.string.isRequired,

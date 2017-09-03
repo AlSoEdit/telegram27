@@ -63,67 +63,30 @@ describe('models : User', () => {
         });
 
         it('should add user to friends', async () => {
-            await user1.addFriend(user2);
+            await user1.addFriend(user2.login);
 
-            const user1Friend = (await User.populate(user1, 'friends')).friends[0];
-            const user2Friend = (await User.populate(user2, 'friends')).friends[0];
+            [user1, user2] = await User.find({}).populate('friends');
 
-            user1Friend.id.should.equal(user2.id);
-            user2Friend.id.should.equal(user1.id);
+            user1.friends[0].id.should.equal(user2.id);
+            user2.friends[0].id.should.equal(user1.id);
         });
 
         it('should not add user to friends if already friend', async () => {
-            await user1.addFriend(user2);
-            await user1.addFriend(user2);
+            await user1.addFriend(user2.login);
+            try {
+                await user1.addFriend(user2.login);
+            } catch (err) {
+                err.message.should.equal(errors.alreadyFriends);
+            }
 
-            const user1Friend = (await User.populate(user1, 'friends'));
-            const user2Friend = (await User.populate(user2, 'friends'));
+            [user1, user2] = await User.find({}).populate('friends');
 
-            user1Friend.friends.length.should.equal(1);
-            user2Friend.friends.length.should.equal(1);
+            user1.friends.length.should.equal(1);
+            user2.friends.length.should.equal(1);
         });
 
         it('add dialog to both friends after addFriend', () => {
 
         });
     });
-
-    describe('deleteFriend', () => {
-        const user1Data = userData;
-        const user2Data = {login: 'l', password: 'p'};
-        let user1 = null;
-        let user2 = null;
-
-        beforeEach(async () => {
-            user1 = await User.create(user1Data);
-            user2 = await User.create(user2Data);
-            await user1.addFriend(user2);
-        });
-
-        it('deletes friend', async () => {
-            await user1.deleteFriend(user2);
-
-            const user1Friend = (await User.populate(user1, 'friends'));
-            const user2Friend = (await User.populate(user2, 'friends'));
-
-            user1Friend.friends.length.should.equal(0);
-            user2Friend.friends.length.should.equal(0);
-        });
-
-        it('throw error if delete user which is not a friend', async () => {
-            const user3 = await User.create({login: 'o', password: 't'});
-
-            try {
-                await user2.deleteFriend(user3);
-            } catch (err) {
-                err.message.should.equal(errors.cannotDeleteFriendIfNotFriends);
-            }
-        });
-    });
-
-    // describe('addDialog', () => {
-    //     it('add dialog to both friends', () => {
-    //
-    //     }) ;
-    // });
 });

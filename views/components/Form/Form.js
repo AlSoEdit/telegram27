@@ -5,63 +5,47 @@ import PropTypes from 'prop-types';
 
 import './Form.css';
 
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
-
-const fetchOptions = {
-    headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-    },
-    method: 'post',
-    credentials: 'same-origin'
-};
-
 export default class Form extends React.Component {
     constructor(props) {
         super(props);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
-        const inputValues = this.props.formData.fields
+        const hiddenValues = this.props.hiddenInputs.map(h => {
+            return { [h.name]: h.value }
+        });
+
+        let inputValues = this.props.formData.fields
             .reduce((acc, v) => {
                 acc[v] = '';
 
                 return acc;
             }, {});
 
-        this.state = {
-            errorText: '',
-            inputValues
-        };
+        inputValues = Object.assign({}, inputValues, ...hiddenValues);
+
+        this.state = { inputValues };
     }
 
-    async onSubmit(e) {
+    onSubmit(e) {
         e.preventDefault();
-        this.setState({ errorText: '' });
 
-        const { url } = this.props.formData;
-        const body = JSON.stringify(this.state.inputValues);
+        const url = e.target.action;
+        const { inputValues } = this.state;
+        const { method } = e.target;
 
-        const options = { body, ...fetchOptions };
-        const res = await fetch(url, options);
-        const { message, isAuthenticated } = await res.json();
-        const errorText = res.status !== 200 ? message : '';
-
-        this.setState({ errorText });
-        this.props.onSubmit(isAuthenticated);
+        this.props.onSubmit({ url, method, inputValues });
     }
 
     onChange(e) {
         const { name, value } = e.target;
-        const newValues = Object.assign(this.state.inputValues, { [name]: value });
+        const newValues = Object.assign({}, this.state.inputValues, { [name]: value });
 
-        this.setState({
-            inputValues: newValues
-        });
+        this.setState({ inputValues: newValues });
     }
 
     render() {
-        const { fields, method, text } = this.props.formData;
+        const { url, fields, method, text } = this.props.formData;
         const inputs = fields.map(valueName => (
             <input
                 className="form__input"
@@ -74,27 +58,32 @@ export default class Form extends React.Component {
         ));
 
         return (
-            <div>
-                <ErrorMessage errorText={this.state.errorText}/>
-                <form
-                    className="form"
-                    method={method}
-                    onSubmit={this.onSubmit}
-                >
-                    {inputs}
-                    <input
-                        className="form__input form__input--type-submit"
-                        type="submit"
-                        value={text}
-                    />
-                </form>
-            </div>
+            <form
+                className={'form'}
+                method={method}
+                action={url}
+                onSubmit={this.onSubmit}
+            >
+                {inputs}
+                <input
+                    className={'form__input form__input--type-submit'}
+                    type="submit"
+                    value={text}
+                />
+            </form>
         );
     }
 }
 
 Form.propTypes = {
     onSubmit: PropTypes.func.isRequired,
+    isLink: PropTypes.bool,
+    hiddenInputs: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string,
+            value: PropTypes.string
+        })
+    ),
     formData: PropTypes.shape({
         url: PropTypes.string.isRequired,
         fields: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -103,6 +92,10 @@ Form.propTypes = {
     })
 };
 
-Form.defaultValues = {
-    text: 'submit'
+Form.defaultProps = {
+    text: 'submit',
+    hiddenInputs: [],
+    formData: {
+        fields: []
+    }
 };

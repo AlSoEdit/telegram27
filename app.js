@@ -9,7 +9,7 @@ const passport = require('./libs/passport');
 const config = require('config');
 const index = require('./routes/index');
 const user = require('./routes/user');
-const userController = require('./controllers/user');
+const authController = require('./controllers/auth');
 
 const app = express();
 
@@ -28,7 +28,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use(userController.setAuthState);
+app.use(authController.setAuthState);
 app.use('/', user);
 app.use('/', index);
 
@@ -47,7 +47,7 @@ app.use(function (err, req, res, next) {
     res.locals.message = message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    res.locals.answer.message = message;
+    res.locals.answer.text = message;
 
     res
         .status(err.status || 500)

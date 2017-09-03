@@ -8,7 +8,7 @@ const dropDB = require('../../scripts/dropDB');
 
 require('chai').should();
 
-describe('models : Dialog', () => {
+describe('models : DialogsContainer', () => {
     let user1, user2, user3 = null;
     const user1Data = {login: 'a', password: 'p'};
     const user2Data = {login: 'b', password: 'p'};
@@ -86,10 +86,15 @@ describe('models : Dialog', () => {
         it('add message', async () => {
             const message = {text: 't', author: user1};
             await dialog.addMessage(message);
+            dialog = await Dialog.findOne({ shortId: dialog.shortId });
 
-            dialog.messages.length.should.equal(1);
-            dialog.messages[0].text.should.equal(message.text);
-            dialog.messages[0].author._id.equals(message.author._id).should.equal(true);
+            const { messages } = dialog;
+            const authorId = messages[0].author.id.toString('hex');
+            const messageText = messages[0].text;
+
+            messages.length.should.equal(1);
+            messageText.should.equal(message.text);
+            authorId.should.equal(message.author.id);
         });
 
         it('should throw error if user not a participant', async () => {

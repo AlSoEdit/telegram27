@@ -43,31 +43,72 @@ userSchema.statics.create = async function ({ login, password }) {
     return user.save();
 };
 
-userSchema.methods.addFriend = async function (friend) {
-    const dialog = await Dialog.create([this, friend]);
-
-    await this.friends.addToSet(friend.id);
-    await friend.friends.addToSet(this.id);
-
-    await this.addDialog(dialog);
-    await friend.addDialog(dialog);
+userSchema.methods.isFriends = function (user) {
+    return this.friends.some(f => f.id.toString('hex') === user.id);
 };
 
-userSchema.methods.deleteFriend = async function (friend) {
-    const isFriends = this.friends.some(f => f.id.toString('hex') === friend.id);
-
-    if (!isFriends) {
-        throw new Error(errors.cannotDeleteFriendIfNotFriends);
+userSchema.methods.addFriend = async function (login) {
+    const user = await User.findOne({ login });
+    if (!user) {
+        throw new Error(errors.notFound(login));
     }
 
-    await this.friends.pull(friend.id);
-    await friend.friends.pull(this.id);
+    if (!this.isFriends(user)) {
+        const dialog = await Dialog.create([this, user]);
+
+        await this.friends.addToSet(user.id);
+        await user.friends.addToSet(this.id);
+
+        await this.save();
+        await user.save();
+
+        await this.addDialog(dialog);
+        await user.addDialog(dialog);
+    } else {
+        throw new Error(errors.alreadyFriends);
+    }
+};
+
+userSchema.methods.getFriends = async function () {
+    const user = await User.populate(this, 'friends');
+
+    return user.friends.map(f => {
+        const fObj = f.toObject();
+
+        return {
+            login: fObj.login
+        };
+    });
 };
 
 userSchema.methods.addDialog = async function (dialog) {
-    this.dialogs.push(dialog.id);
+    await this.dialogs.addToSet(dialog.id);
 
     await this.save();
+};
+
+userSchema.methods.getDialogs = async function () {
+    const user = await Dialog.populate(this, {
+        path: 'dialogs',
+        populate: [
+            {
+                path: 'participants'
+            },
+            {
+                path: 'messages'
+            }
+        ]
+    });
+
+    return user.dialogs.map(d => {
+        const dObj = d.toObject();
+
+        return {
+            participants: dObj.participants.map(p => {return { login: p.login };}),
+            messages: dObj.messages,
+            id: dObj.shortId
+        };
+    });
 };
 
 const User = mongoose.model('User', userSchema);

@@ -1,20 +1,19 @@
 .form {
     display: flex;
-    margin: 5px 0;
     flex-direction: column;
-    min-width: 200px;
 }
 
 .form__input {
+    display: block;
     background-color: #ffffff;
     color: #332;
     min-height: 25px;
     padding: 0 0;
     max-width: 200px;
+    min-width: 100%;
     border: .5px solid #6E7BFF;
     border-radius: 1.5px;
     margin: 5px 0;
-    display: block;
     text-align: center;
 }
 

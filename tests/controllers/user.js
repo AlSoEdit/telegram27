@@ -32,8 +32,9 @@ describe('controllers : User', () => {
             try {
                 await client.post('/signup').send({ login, password });
             } catch (err) {
+                const { text } = err.response.body;
                 err.status.should.equal(httpStatusCodes.BAD_REQUEST);
-                err.response.text.should.equal(errors.uniqueFieldAlreadyExists('login'));
+                text.should.equal(errors.uniqueFieldAlreadyExists('login'));
             }
         });
 
@@ -41,8 +42,9 @@ describe('controllers : User', () => {
             try {
                 await client.post('/signup').send({ password });
             } catch (err) {
+                const { text } = err.response.body;
                 err.status.should.equal(httpStatusCodes.BAD_REQUEST);
-                err.response.text.should.equal(errors.fieldRequired('login'));
+                text.should.equal(errors.fieldRequired('login'));
             }
         });
 
@@ -50,8 +52,9 @@ describe('controllers : User', () => {
             try {
                 await client.post('/signup').send({ login });
             } catch (err) {
+                const { text } = err.response.body;
                 err.status.should.equal(httpStatusCodes.BAD_REQUEST);
-                err.response.text.should.equal(errors.fieldRequired('password'));
+                text.should.equal(errors.fieldRequired('password'));
             }
         });
     });
@@ -74,8 +77,9 @@ describe('controllers : User', () => {
             try {
                 await agent.post('/signin').send({ login, password });
             } catch (err) {
+                const { text } = err.response.body;
                 err.status.should.equal(httpStatusCodes.BAD_REQUEST);
-                err.response.text.should.equal(errors.alreadyAuthenticated);
+                text.should.equal(errors.alreadyAuthenticated);
             }
         });
 
@@ -83,8 +87,9 @@ describe('controllers : User', () => {
             try {
                 await client.post('/signin').send({login: login + '0', password});
             } catch (err) {
+                const { text } = err.response.body;
                 err.status.should.equal(httpStatusCodes.BAD_REQUEST);
-                err.response.text.should.equal(errors.wrongLoginOrPassword);
+                text.should.equal(errors.wrongLoginOrPassword);
             }
         });
 
@@ -92,9 +97,45 @@ describe('controllers : User', () => {
             try {
                 await client.post('/signin').send({login, password: password + '0'});
             } catch (err) {
+                const { text } = err.response.body;
                 err.status.should.equal(httpStatusCodes.BAD_REQUEST);
-                err.response.text.should.equal(errors.wrongLoginOrPassword);
+                text.should.equal(errors.wrongLoginOrPassword);
             }
+        });
+    });
+
+    describe('add friend', () => {
+        const login2 = login + '0';
+        let agent = null;
+
+        beforeEach(async () => {
+            agent = chai.request.agent(app);
+            await agent.post('/signup').send({ login, password });
+            await client.post('/signup').send({ login: login2, password: password });
+        });
+
+        it('should add friend', async () => {
+            const res = await agent.post('/friend').send({ login: login2 });
+
+            res.status.should.equal(httpStatusCodes.OK);
+        });
+
+        it('should not add friend if already friends', async () => {
+            await agent.post('/friend').send({ login: login2 });
+
+            try {
+                await agent.post('/friend').send({ login: login2 });
+            } catch (err) {
+                const { text } = err.response.body;
+                text.should.equal(errors.alreadyFriends);
+            }
+
+            const res = await agent.get('/dialogs').send();
+            const { dialogs } = res.body.user;
+
+            res.status.should.equal(httpStatusCodes.OK);
+            dialogs[0].participants.length.should.equal(2);
+            dialogs.length.should.equal(1);
         });
     });
 });

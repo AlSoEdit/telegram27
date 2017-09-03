@@ -2,13 +2,14 @@
 
 const mongoose = require('../libs/mongoDB');
 const errors = require('../constants/errors');
+const shortId = require('shortid');
 const Schema = mongoose.Schema;
 
 const dialogSchema = new Schema({
     participants: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
-        minlength: 1
+        minlength: 2
     }],
 
     messages: [{
@@ -28,7 +29,11 @@ const dialogSchema = new Schema({
             required: true,
             default: Date.now
         }
-    }]
+    }],
+
+    shortId: {
+        type: String
+    }
 });
 
 dialogSchema.statics.create = function (participants) {
@@ -38,6 +43,7 @@ dialogSchema.statics.create = function (participants) {
 
     participants = participants.map(p => p.id);
     const dialog = new this({participants});
+    dialog.shortId = shortId.generate();
 
     return dialog.save();
 };
@@ -61,7 +67,7 @@ dialogSchema.methods.addMessage = async function ({text, author}) {
         throw new Error(errors.cannotAddMessageIfNotParticipant);
     }
 
-    this.messages.push({text, author});
+    this.messages.push({text, author: author.id});
 
     await this.save();
 };

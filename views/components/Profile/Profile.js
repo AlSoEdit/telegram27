@@ -2,12 +2,14 @@
 
 import React from 'react';
 
+import './Profile.css';
+
 export default class Profile extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            login: ''
+            user: null
         };
     }
 
@@ -19,17 +21,17 @@ export default class Profile extends React.Component {
         });
 
         const json = await res.json();
-        const { login } = json;
+        const { user } = json;
 
         this.setState({
-            login
+            user
         });
     }
 
     render() {
         return (
-            <p>
-                Login: {this.state.login}.
+            <p className="login">
+                Login: {this.state.user && this.state.user.login}.
             </p>
         );
     }

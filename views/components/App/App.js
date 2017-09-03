@@ -1,109 +1,72 @@
 'use strict';
 
 import React from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 
 import Header from '../Header/Header';
-import Profile from '../Profile/Profile';
+import PageContent from '../PageContent/PageContent';
 
 import './App.css';
-import Form from '../Form/Form';
 
-const notAuthenticatedNav = [
-    {
-        url: '/signin',
-        allPaths: ['/signin', '/'],
-        text: 'Sign In',
-        method: 'post',
-        fields: ['login', 'password']
-    },
-    {
-        url: '/signup',
-        allPaths: ['/signup'],
-        text: 'Sign Up',
-        method: 'post',
-        fields: ['login', 'password']
-    }
-];
-
-const authenticatedNav = [
-    {
-        url: '/profile',
-        text: 'Profile',
-        method: 'get',
-        allPaths: ['/', '/profile']
-    },
-    {
-        url: '/signout',
-        text: 'Sign Out',
-        method: 'post'
-    }
-];
-
-const fetchOptions = {
-    method: 'post',
-    credentials: 'same-origin',
-    'Content-Type': 'application/json',
-    Accept: 'application/json'
-};
+import {
+    fetchOptions,
+    notAuthNav,
+    authNav
+} from '../../../constants/routes';
 
 export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
-        this.onSubmitRequest = this.onSubmitRequest.bind(this);
 
         this.state = {
-            isAuthenticated: false,
+            user: null,
             errorText: ''
         };
     }
 
-    onSubmit(isAuthenticated) {
-        this.setState({
-            isAuthenticated
-        });
-    }
-
-    async onSubmitRequest(e) {
-        e.preventDefault();
-
-        const options = Object.assign(fetchOptions, { method: e.target.method });
-        const res = await fetch(e.target.action, options);
-        const { isAuthenticated } = await res.json();
-
-        this.onSubmit(isAuthenticated);
+    async onSubmit({ url, inputValues, method }) {
+        const body = ['head', 'get'].includes(method) ? null : JSON.stringify(inputValues);
+        const options = { body, ...fetchOptions, method };
+        const res = await fetch(url, options);
+        try {
+            let { text, user } = await res.json();
+            const errorText = text || '';
+            this.setState({
+                user,
+                errorText
+            });
+        } catch (err) {
+            this.setState({ errorText: res.statusText });
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return this.state.isAuthenticated !== nextState.isAuthenticated;
+        const authStatusChanged = this.state.user !== nextState.user;
+        const errorTextChanged = this.state.text !== nextState.text;
+
+        return authStatusChanged || errorTextChanged;
     }
 
     render() {
-        const { isAuthenticated } = this.state;
-        const links = isAuthenticated ? authenticatedNav : notAuthenticatedNav;
-
-        const routes = !isAuthenticated && notAuthenticatedNav.map(s => <Route
-                exact
-                path={s.url}
-                render={() =>
-                    <Form
-                        isAuthenticated={isAuthenticated}
-                        onSubmit={this.onSubmit}
-                        formData={s}
-                    />
-                }
-            />
-        );
+        const { user, errorText } = this.state;
+        const links = user ? authNav : notAuthNav;
 
         return (
-            <BrowserRouter>
+            <HashRouter>
                 <div className="main">
-                    <Header links={links} isAuthenticated={isAuthenticated} onSubmit={this.onSubmitRequest}/>
-                    { isAuthenticated && <Profile/> }
-                    {routes}
+                    <Header
+                        title={'chat'}
+                        links={links}
+                        onSubmit={this.onSubmit}
+                    />
+                    <PageContent
+                        user={user}
+                        errorText={errorText}
+                        onSubmit={this.onSubmit}
+                    />
                 </div>
-            </BrowserRouter>
+            </HashRouter>
         );
     }
 }

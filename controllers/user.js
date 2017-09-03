@@ -1,85 +1,40 @@
 'use strict';
 
-const User = require('../models/user');
-const passport = require('../libs/passport');
-const errors = require('../constants/errors');
-const httpStatusCodes = require('http-status-codes');
 const { BadRequestError } = require('../libs/requestErrors');
 
-async function signUp(req, res, next) {
-    const { login, password } = req.body;
+function getUserProfile(req, res) {
+    const { login } = req.user;
+    res.locals.answer.user.login = login;
+
+    res.json(res.locals.answer);
+}
+
+async function getDialogs(req, res) {
+    res.locals.answer.user.dialogs = await req.user.getDialogs();
+
+    res.json(res.locals.answer);
+}
+
+async function getFriends(req, res) {
+    res.locals.answer.user.friends = req.user.getFriends();
+    res.json(res.locals.answer);
+}
+
+async function addFriend(req, res, next) {
+    const { user } = req;
+    const { login } = req.body;
 
     try {
-        await User.create({ login, password });
-        await signIn(req, res, next);
+        await user.addFriend(login);
+        res.json(res.locals.answer);
     } catch (err) {
         next(new BadRequestError(err.message));
     }
 }
 
-function passIfAuthenticated(req, res, next) {
-    if (!req.user) {
-        next(new BadRequestError(errors.notAuthenticated));
-    } else {
-        next();
-    }
-}
-
-function passIfNotAuthenticated(req, res, next) {
-    if (req.user) {
-        next(new BadRequestError(errors.alreadyAuthenticated));
-    } else {
-        next();
-    }
-}
-
-function signIn(req, res, next) {
-    if (req.user) {
-        throw new BadRequestError(errors.alreadyAuthenticated);
-    }
-
-    passport.authenticate('local', (err, user) => {
-        if (!user) {
-            next(new BadRequestError(errors.wrongLoginOrPassword));
-        } else {
-            req.logIn(user, () => {
-                res.locals.answer.isAuthenticated = true;
-                res.json(res.locals.answer);
-            });
-        }
-    })(req, res, next);
-}
-
-function signOut(req, res) {
-    req.session.destroy();
-    req.logout();
-
-    res.locals.answer.isAuthenticated = false;
-    res.json(res.locals.answer);
-}
-
-function setAuthState(req, res, next) {
-    res.locals.answer = Object.assign(
-        res.locals.answer || {},
-        {isAuthenticated: req.user !== undefined}
-    );
-
-    next();
-}
-
-function getUserProfile(req, res) {
-    const { login } = req.user;
-    res.locals.answer = Object.assign(res.locals.answer || {}, { login });
-
-    res.json(res.locals.answer);
-}
-
 module.exports = {
-    signUp,
-    signIn,
-    setAuthState,
-    signOut,
-    passIfAuthenticated,
-    passIfNotAuthenticated,
-    getUserProfile
+    getUserProfile,
+    getFriends,
+    getDialogs,
+    addFriend
 };
