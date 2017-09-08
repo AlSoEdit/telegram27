@@ -5,16 +5,12 @@ import PropTypes from 'prop-types';
 
 import './Text.css';
 
-export default class ErrorMessage extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
+export default class Text extends React.Component {
     render() {
-        return <p className="error-message">{this.props.text || ''}</p>;
+        return <p className="text">{this.props.text || ''}</p>;
     }
 }
 
-ErrorMessage.propTypes = {
+Text.propTypes = {
     text: PropTypes.string
 };

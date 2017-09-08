@@ -1,17 +1,57 @@
 'use strict';
 
+const User = require('../models/user');
+const passport = require('../libs/passport');
+const errors = require('../constants/errors');
 const { BadRequestError } = require('../libs/requestErrors');
 
-function getUserProfile(req, res) {
-    const { login } = req.user;
-    res.locals.answer.user.login = login;
+async function signUp(req, res, next) {
+    const { login, password } = req.body;
 
+    try {
+        await User.create({ login, password });
+        await signIn(req, res, next);
+    } catch (err) {
+        next(new BadRequestError(err.message));
+    }
+}
+
+function signIn(req, res, next) {
+    passport.authenticate('local', (err, user) => {
+        if (!user) {
+            next(new BadRequestError(errors.wrongLoginOrPassword));
+        } else {
+            res.locals.answer.user = user.toResponseObject();
+            req.logIn(user, () => res.json(res.locals.answer));
+        }
+    })(req, res, next);
+}
+
+function signOut(req, res) {
+    req.session.destroy();
+    req.logout();
+
+    res.locals.answer.user = null;
     res.json(res.locals.answer);
 }
 
-async function getDialogs(req, res) {
-    res.locals.answer.user.dialogs = await req.user.getDialogs();
+function setAuthState(req, res, next) {
+    res.locals.answer = res.locals.answer || {};
+    res.locals.answer.user = req.user ? req.user.toResponseObject() : null;
 
+    next();
+}
+
+function passIfAuthenticated(req, res, next) {
+    if (!req.user) {
+        next(new BadRequestError(errors.notAuthenticated));
+    } else {
+        next();
+    }
+}
+
+function getProfile(req, res) {
+    res.locals.answer.user = req.user.toResponseObject();
     res.json(res.locals.answer);
 }
 
@@ -33,8 +73,12 @@ async function addFriend(req, res, next) {
 }
 
 module.exports = {
-    getUserProfile,
+    signUp,
+    signIn,
+    signOut,
+    passIfAuthenticated,
+    setAuthState,
+    getProfile,
     getFriends,
-    getDialogs,
     addFriend
 };

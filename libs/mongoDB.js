@@ -1,7 +1,11 @@
 'use strict';
 
+const config = require('config');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/chat_db');
+
+const options = config.get('dbOptions');
+const { path, port } = options;
+mongoose.connect(`mongodb://${path}:${port}`);
 const db = mongoose.connection;
 mongoose.Promise = global.Promise;
 

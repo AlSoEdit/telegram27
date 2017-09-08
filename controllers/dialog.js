@@ -4,10 +4,9 @@ const Dialog = require('../models/dialog');
 const { BadRequestError } = require('../libs/requestErrors');
 
 async function addMessage(req, res, next) {
-    const shortId = req.body.id;
-    const dialog = await Dialog.findOne({ shortId });
-    const { text } = req.body;
+    const { id, text } = req.body;
     const author = req.user;
+    const dialog = await Dialog.findById(id);
 
     try {
         await dialog.addMessage({ text, author });
@@ -17,6 +16,20 @@ async function addMessage(req, res, next) {
     }
 }
 
+async function getById(req, res) {
+    res.locals.answer.user.dialogs = [await Dialog.getById(req.params.id)];
+
+    res.json(res.locals.answer);
+}
+
+async function getByUser(req, res) {
+    res.locals.answer.user.dialogs = await Dialog.getByUser(req.user);
+
+    res.json(res.locals.answer);
+}
+
 module.exports = {
-    addMessage
+    addMessage,
+    getById,
+    getByUser
 };

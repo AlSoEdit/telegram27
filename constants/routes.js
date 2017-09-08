@@ -4,37 +4,33 @@ const signin = {
     url: '/signin',
     text: 'Sign In',
     method: 'post',
-    fields: ['login', 'password'],
-    isNavLink: true
+    fields: ['login', 'password']
 };
 
 const signup = {
     url: '/signup',
     text: 'Sign Up',
     method: 'post',
-    fields: ['login', 'password'],
-    isNavLink: true
+    fields: ['login', 'password']
 };
 
 const profile = {
     url: '/profile',
     text: 'Profile',
-    method: 'get',
-    isNavLink: true
+    method: 'get'
 };
 
 const dialogs = {
     url: '/dialogs',
     text: 'Dialogs',
-    method: 'get',
-    isNavLink: true
+    method: 'get'
 };
 
 const friend = {
     url: '/friend',
-    fields: ['login'],
+    text: 'Add friend',
     method: 'post',
-    text: 'Add friend'
+    fields: ['login']
 };
 
 const signout = {
@@ -52,12 +48,12 @@ const message = {
 
 module.exports = {
     fetchOptions: {
+        method: 'post',
+        credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json'
-        },
-        method: 'post',
-        credentials: 'same-origin'
+        }
     },
 
     notAuthNav: [signin, signup],

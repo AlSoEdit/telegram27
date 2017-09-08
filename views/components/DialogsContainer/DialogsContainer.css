@@ -1,6 +1,7 @@
 
-.page-content {
+.dialogs-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 700px;
 }

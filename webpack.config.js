@@ -8,6 +8,7 @@ const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
     inject: 'body'
 });
 
+const target = 'http://localhost:8080';
 
 module.exports = {
     entry: path.join(__dirname, 'views', 'index.js'),
@@ -18,34 +19,31 @@ module.exports = {
         host: 'localhost',
         proxy: {
             '/sign.*?': {
-                target: 'http://localhost:8080',
+                target,
                 bypass: function(req) {
                     return req.method === 'post';
                 }
             },
-            '/profile': {
-                target: 'http://localhost:8080'
-            },
-            '/friend': {
-                target: 'http://localhost:8080'
-            },
-            '/dialog': {
-                target: 'http://localhost:8080'
-            },
-            '/dialogs': {
-                target: 'http://localhost:8080'
-            },
-            '/message': {
-                target: 'http://localhost:8080'
-            }
+            '/profile': { target },
+            '/friend': { target },
+            '/dialog': { target },
+            '/dialogs': { target },
+            '/message': { target }
         }
     },
+
     module: {
         loaders: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader'
+                loader: 'babel-loader',
+                options: {
+                    'presets': [
+                        'react',
+                        'stage-2'
+                    ]
+                }
             },
             {
                 test: /\.css$/,
@@ -54,9 +52,11 @@ module.exports = {
             }
         ]
     },
+
     output: {
         filename: 'bundle.js',
         path: path.join(__dirname, 'public'),
     },
+
     plugins: [HTMLWebpackPluginConfig]
 };

@@ -7,9 +7,9 @@ const bodyParser = require('body-parser');
 const passport = require('./libs/passport');
 
 const config = require('config');
-const index = require('./routes/index');
 const user = require('./routes/user');
-const authController = require('./controllers/auth');
+const dialog = require('./routes/dialog');
+const userController = require('./controllers/user');
 
 const app = express();
 
@@ -28,9 +28,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use(authController.setAuthState);
+app.use(userController.setAuthState);
 app.use('/', user);
-app.use('/', index);
+app.use('/', dialog);
+
+app.use('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '..', 'public', 'index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

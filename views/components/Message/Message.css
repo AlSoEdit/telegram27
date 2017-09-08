@@ -1,5 +1,57 @@
 
 .message {
-    min-height: 10px;
-    border: solid rgb(0, 0, 0) 2px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    max-width: 45%;
+    min-width: 40px;
+    border: solid #5CC1E8 2px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 5px;
+    -ms-word-wrap: break-word;
+    word-break: break-word;
+    margin-bottom: 5px;
+    font-size: 0.7em;
+    background-color: #8BA8FF;
+}
+
+.message.preview {
+    width: 100%;
+    max-width: 100%;
+    border: 0;
+    margin: 0;
+    border-radius: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.message.left-side {
+    border-color: #7EAAE8;
+}
+
+.left-side {
+    align-self: flex-start;
+}
+
+.right-side {
+    align-self: flex-end;
+}
+
+.message-text,
+.message-date {
+    margin: 0;
+}
+
+.message-date {
+    font-size: 0.6em;
+    align-self: flex-end;
+    padding: 5px;
+    padding-bottom: 0;
+}
+
+.message-text {
+    align-self: flex-start;
+    padding: 3px 10px 3px 3px;
 }

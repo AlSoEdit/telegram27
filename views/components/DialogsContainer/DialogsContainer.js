@@ -9,6 +9,7 @@ import Dialog from '../Dialog/Dialog';
 
 import { authenticatedRoutes } from '../../../constants/routes';
 
+import './DialogsContainer.css';
 
 export default class Dialogs extends React.Component {
     constructor(props) {
@@ -39,23 +40,20 @@ export default class Dialogs extends React.Component {
         let dialogs = user.dialogs || [];
         const { chosenDialog } = this.state;
 
-        dialogs = chosenDialog !== null
-            ? [dialogs[chosenDialog]]
-            : dialogs;
-
-        dialogs = dialogs.map((d, index) => {
-            d = Object.assign({} , d, { index: index });
-
-            return <Dialog
+        dialogs = dialogs.map((d, index) => Object.assign({ index: index }, d));
+        dialogs = chosenDialog !== null ? [dialogs[chosenDialog]] : dialogs;
+        dialogs = dialogs.map(d =>
+            <Dialog
                 dialog={d}
+                user={user}
                 showPreview={chosenDialog === null}
                 chooseDialog={this.chooseDialog}
                 onSubmit={this.props.onSubmit}
-            />;
-        });
+            />
+        );
 
         return (
-            <div>
+            <div className="dialogs-container">
                 <Form
                     onSubmit={onSubmit}
                     formData={authenticatedRoutes.friend}

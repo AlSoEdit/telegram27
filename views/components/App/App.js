@@ -43,7 +43,7 @@ export default class App extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         const authStatusChanged = this.state.user !== nextState.user;
-        const errorTextChanged = this.state.text !== nextState.text;
+        const errorTextChanged = this.state.errorText !== nextState.errorText;
 
         return authStatusChanged || errorTextChanged;
     }

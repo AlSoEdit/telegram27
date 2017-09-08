@@ -5,29 +5,26 @@ import PropTypes from 'prop-types';
 
 import './Form.css';
 
+function setInitialValues(fields, hiddenValues) {
+    return fields
+        .reduce((acc, v) => {
+            acc[v] = '';
+
+            return acc;
+        }, Object.assign({}, hiddenValues));
+}
+
 export default class Form extends React.Component {
     constructor(props) {
         super(props);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
-        const hiddenValues = this.props.hiddenInputs.map(h => {
-            return { [h.name]: h.value }
-        });
-
-        let inputValues = this.props.formData.fields
-            .reduce((acc, v) => {
-                acc[v] = '';
-
-                return acc;
-            }, {});
-
-        inputValues = Object.assign({}, inputValues, ...hiddenValues);
-
+        let inputValues = setInitialValues(this.props.formData.fields, this.props.hiddenInputs);
         this.state = { inputValues };
     }
 
-    onSubmit(e) {
+    async onSubmit(e) {
         e.preventDefault();
 
         const url = e.target.action;
@@ -35,6 +32,9 @@ export default class Form extends React.Component {
         const { method } = e.target;
 
         this.props.onSubmit({ url, method, inputValues });
+        this.setState({
+            inputValues: setInitialValues(this.props.formData.fields, this.props.hiddenInputs)
+        });
     }
 
     onChange(e) {

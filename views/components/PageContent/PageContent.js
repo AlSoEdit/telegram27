@@ -44,7 +44,7 @@ export default class PageContent extends React.Component {
                             />
                         }
                         path={l.url}
-                        redirectPath="/profile"
+                        redirectPath="/dialogs"
                     />
                 )}
             </div>

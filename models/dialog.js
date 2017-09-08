@@ -2,14 +2,13 @@
 
 const mongoose = require('../libs/mongoDB');
 const errors = require('../constants/errors');
-const shortId = require('shortid');
 const Schema = mongoose.Schema;
 
 const dialogSchema = new Schema({
     participants: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
-        minlength: 2
+        minlength: 1
     }],
 
     messages: [{
@@ -29,11 +28,7 @@ const dialogSchema = new Schema({
             required: true,
             default: Date.now
         }
-    }],
-
-    shortId: {
-        type: String
-    }
+    }]
 });
 
 dialogSchema.statics.create = function (participants) {
@@ -43,7 +38,6 @@ dialogSchema.statics.create = function (participants) {
 
     participants = participants.map(p => p.id);
     const dialog = new this({participants});
-    dialog.shortId = shortId.generate();
 
     return dialog.save();
 };
@@ -77,6 +71,46 @@ dialogSchema.methods.findByText = function (text) {
 
     return this.messages
         .filter(m => m.text.toLowerCase().includes(text));
+};
+
+dialogSchema.statics.getById = async function (id) {
+    const dialog = await Dialog
+        .findById(id)
+        .populate([
+            { path: 'participants' },
+            { path: 'messages.author' }
+        ]);
+
+    return dialog.toResponseObject();
+};
+
+dialogSchema.methods.toResponseObject = function () {
+    const dObj = this.toObject();
+    const id = dObj._id.id.toString('hex');
+
+    return {
+        id,
+        participants: dObj.participants.map(p => {
+            return {login: p.login};
+        }),
+        messages: dObj.messages.map(m => Object.assign({}, m, {author: m.author.login}))
+    };
+};
+
+dialogSchema.statics.getByUser = async function (user) {
+    const populatedUser = await Dialog.populate(user, {
+        path: 'dialogs',
+        populate: [
+            {
+                path: 'participants'
+            },
+            {
+                path: 'messages.author'
+            }
+        ]
+    });
+
+    return populatedUser.dialogs.map(d => d.toResponseObject());
 };
 
 const Dialog = mongoose.model('Dialog', dialogSchema);

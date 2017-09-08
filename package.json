@@ -1,13 +1,13 @@
 {
   "name": "chat",
-  "version": "0.0.0",
+  "version": "0.2.7",
   "private": true,
   "scripts": {
-    "start": "concurrently \"npm run front-server\" \"npm run back-server\"",
-    "back-server": "node \"index.js\"",
-    "front-server": "npm run build && webpack-dev-server",
+    "start": "npm run build && cross-env NODE_ENV=production node index.js",
+    "start-dev": "cross-env NODE_ENV=development concurrently \"npm run front-server-dev\" \"node index.js\"",
+    "front-server-dev": "npm run build && webpack-dev-server",
     "build": "webpack",
-    "test": "mocha --timeout 5000 --recursive ./tests"
+    "test": "mocha --recursive ./tests"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
@@ -15,6 +15,7 @@
     "concurrently": "^3.5.0",
     "config": "^1.26.2",
     "cookie-parser": "~1.4.3",
+    "dateformat": "^2.0.0",
     "debug": "~2.6.0",
     "express": "~4.14.1",
     "express-session": "^1.15.5",
@@ -27,8 +28,7 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-router-dom": "^4.2.2",
-    "serve-favicon": "~2.3.2",
-    "shortid": "^2.2.8"
+    "serve-favicon": "~2.3.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -38,6 +38,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.1",
+    "cross-env": "^5.0.5",
     "css-hot-loader": "^1.3.0",
     "css-loader": "^0.28.5",
     "eslint": "^4.4.1",
