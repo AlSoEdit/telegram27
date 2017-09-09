@@ -5,9 +5,9 @@
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=production node index.js",
     "start-dev": "cross-env NODE_ENV=development concurrently \"npm run front-server-dev\" \"node index.js\"",
-    "front-server-dev": "npm run build && webpack-dev-server",
+    "front-server-dev": "webpack-dev-server",
     "build": "webpack",
-    "test": "mocha --recursive ./tests"
+    "test": "cross-env NODE_ENV=test mocha --recursive ./tests"
   },
   "dependencies": {
     "body-parser": "~1.16.0",

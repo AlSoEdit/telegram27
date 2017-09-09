@@ -1,7 +1,7 @@
 'use strict';
 
 const Dialog = require('../models/dialog');
-const { BadRequestError } = require('../libs/requestErrors');
+const { BadRequestError, NotFoundError } = require('../libs/requestErrors');
 
 async function addMessage(req, res, next) {
     const { id, text } = req.body;
@@ -16,15 +16,17 @@ async function addMessage(req, res, next) {
     }
 }
 
-async function getById(req, res) {
-    res.locals.answer.user.dialogs = [await Dialog.getById(req.params.id)];
-
-    res.json(res.locals.answer);
+async function getById(req, res, next) {
+    try {
+        res.locals.answer.user.dialogs = [await Dialog.getById(req.params.id)];
+        res.json(res.locals.answer);
+    } catch (err) {
+        next(new NotFoundError(err.message));
+    }
 }
 
 async function getByUser(req, res) {
     res.locals.answer.user.dialogs = await Dialog.getByUser(req.user);
-
     res.json(res.locals.answer);
 }
 

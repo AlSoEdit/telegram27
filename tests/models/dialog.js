@@ -8,7 +8,7 @@ const dropDB = require('../../scripts/dropDB');
 
 require('chai').should();
 
-describe('models : DialogsContainer', () => {
+describe('models : Dialog', () => {
     let user1, user2, user3 = null;
     const user1Data = {login: 'a', password: 'p'};
     const user2Data = {login: 'b', password: 'p'};
@@ -65,7 +65,7 @@ describe('models : DialogsContainer', () => {
             newDialog.participants[2]._id.equals(user3._id).should.equal(true);
         });
 
-        it('should throw error on empty participants', async () => {
+        it('throw error on empty participants', async () => {
             const dialog = await Dialog.create([user1, user2]);
 
             try {
@@ -86,18 +86,17 @@ describe('models : DialogsContainer', () => {
         it('add message', async () => {
             const message = {text: 't', author: user1};
             await dialog.addMessage(message);
-            dialog = await Dialog.findOne({ shortId: dialog.shortId });
+            [ dialog ] = await Dialog.find();
 
             const { messages } = dialog;
             const authorId = messages[0].author.id.toString('hex');
-            const messageText = messages[0].text;
 
             messages.length.should.equal(1);
-            messageText.should.equal(message.text);
+            messages[0].text.should.equal(message.text);
             authorId.should.equal(message.author.id);
         });
 
-        it('should throw error if user not a participant', async () => {
+        it('throw error if user not a participant', async () => {
             const message = {text: 't', author: user3};
 
             try {

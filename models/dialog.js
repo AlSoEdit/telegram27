@@ -1,6 +1,7 @@
 'use strict';
 
 const mongoose = require('../libs/mongoDB');
+const { isValid } = mongoose.Types.ObjectId;
 const errors = require('../constants/errors');
 const Schema = mongoose.Schema;
 
@@ -74,14 +75,21 @@ dialogSchema.methods.findByText = function (text) {
 };
 
 dialogSchema.statics.getById = async function (id) {
-    const dialog = await Dialog
-        .findById(id)
-        .populate([
-            { path: 'participants' },
-            { path: 'messages.author' }
-        ]);
+    if (!isValid(id)) {
+        throw new Error(errors.notFound('dialog'));
+    }
 
-    return dialog.toResponseObject();
+    const dialog = await Dialog.findById(id);
+    if (!dialog) {
+        throw new Error(errors.notFound('dialog'));
+    }
+
+    const populatedDialog = await Dialog.populate(dialog, [
+        { path: 'participants' },
+        { path: 'messages.author' }
+    ]);
+
+    return populatedDialog.toResponseObject();
 };
 
 dialogSchema.methods.toResponseObject = function () {

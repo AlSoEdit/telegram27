@@ -56,7 +56,7 @@ function getProfile(req, res) {
 }
 
 async function getFriends(req, res) {
-    res.locals.answer.user.friends = req.user.getFriends();
+    res.locals.answer.user.friends = await req.user.getFriends();
     res.json(res.locals.answer);
 }
 
