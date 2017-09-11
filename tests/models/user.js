@@ -15,6 +15,8 @@ const userData = {
 describe('models : User', () => {
     beforeEach(dropDB.removeAll);
 
+    after(dropDB.removeAll);
+
     describe('create', () => {
         it('creates user', async () => {
             const user = await User.create(userData);

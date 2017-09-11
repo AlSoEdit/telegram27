@@ -4,9 +4,13 @@ const config = require('config');
 const mongoose = require('mongoose');
 
 const mongoUri = config.get('mongoUri');
-mongoose.connect(`mongodb://${mongoUri}`);
-const db = mongoose.connection;
 mongoose.Promise = global.Promise;
+mongoose.connect(`mongodb://${mongoUri}`, {
+    useMongoClient: true,
+    promiseLibrary: global.Promise
+});
+
+const db = mongoose.connection;
 
 db.once('open', () => {});
 

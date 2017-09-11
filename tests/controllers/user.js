@@ -24,6 +24,8 @@ describe('controllers : User', () => {
         agent = chai.request.agent(app);
     });
 
+    after(dropDB.removeAll);
+
     afterEach(() => {
         agent = null;
     });

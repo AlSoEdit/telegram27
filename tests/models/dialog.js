@@ -21,6 +21,8 @@ describe('models : Dialog', () => {
         user3 = await User.create(user3Data);
     });
 
+    after(dropDB.removeAll);
+
     describe('create', () => {
         it('creates dialog', async () => {
             const participants = [user1, user2, user3];

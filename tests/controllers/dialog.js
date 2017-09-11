@@ -38,6 +38,8 @@ describe('controllers : dialog', () => {
 
     afterEach(() => agent = null);
 
+    after(dropDB.removeAll);
+
     describe('addMessage', () => {
         it('add message to dialog', async () => {
             let res = await agent.post('/message').send({ id, text });
