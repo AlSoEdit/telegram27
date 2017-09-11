@@ -1,8 +1,7 @@
 'use strict';
 
+const { MONGO_USER, MONGO_PASS, MONGO_URI } = process.env;
+
 module.exports = {
-    dbOptions: {
-        path: 'mongoDB',
-        port: '27017'
-    }
+    mongoUri: `${MONGO_USER}:${MONGO_PASS}@${MONGO_URI}`
 };

@@ -2,6 +2,9 @@
   "name": "chat",
   "version": "0.2.7",
   "private": true,
+  "engines": {
+    "node": "7.7.2"
+  },
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=production node index.js",
     "start-dev": "cross-env NODE_ENV=development concurrently \"npm run front-server-dev\" \"node index.js\"",

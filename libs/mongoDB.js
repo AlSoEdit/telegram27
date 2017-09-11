@@ -3,9 +3,8 @@
 const config = require('config');
 const mongoose = require('mongoose');
 
-const options = config.get('dbOptions');
-const { path, port } = options;
-mongoose.connect(`mongodb://${path}:${port}`);
+const mongoUri = config.get('mongoUri');
+mongoose.connect(`mongodb://${mongoUri}`);
 const db = mongoose.connection;
 mongoose.Promise = global.Promise;
 
