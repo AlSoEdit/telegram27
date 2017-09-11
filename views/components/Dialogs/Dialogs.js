@@ -62,6 +62,7 @@ export default class Dialogs extends Component {
                         {
                             chosenDialog
                             ? <Dialog
+                                    fetchDialogById={this.props.fetchDialogById}
                                     dialog={chosenDialog}
                                     user={user}
                                     showPreview={false}

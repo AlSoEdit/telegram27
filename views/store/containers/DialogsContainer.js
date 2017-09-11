@@ -18,10 +18,10 @@ function mapDispatchToProps(dispatch) {
         fetchDialogs: () => dispatch(makeRequest(dialogs)),
 
         fetchDialogById: (id) => {
-            let { url, method } = dialog;
+            let { url, method, additionalAction } = dialog;
             url += `/${id}`;
 
-            dispatch(makeRequest({ url, method }));
+            dispatch(makeRequest({ url, method, additionalAction }));
         }
     };
 }

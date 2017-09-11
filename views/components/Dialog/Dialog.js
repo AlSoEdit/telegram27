@@ -12,6 +12,22 @@ export default class Dialog extends Component {
     constructor(props) {
         super(props);
         this.bottom = null;
+        this.timeoutId = null;
+    }
+
+    componentDidMount() {
+        function a() {
+            this.timeoutId = setTimeout(() => {
+                this.props.fetchDialogById(this.props.dialog.id);
+                a.call(this);
+            }, 3000);
+        }
+
+        a.call(this);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timeoutId);
     }
 
     componentDidUpdate() {
