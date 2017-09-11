@@ -96,6 +96,16 @@ describe('models : Dialog', () => {
             authorId.should.equal(message.author.id);
         });
 
+        it('throw error on empty message', async () => {
+            const message = { text: '', author: user1 };
+
+            try {
+                await dialog.addMessage(message);
+            } catch (err) {
+                err.message.should.equal(errors.shouldNotBeEmpty('message'));
+            }
+        });
+
         it('throw error if user not a participant', async () => {
             const message = {text: 't', author: user3};
 

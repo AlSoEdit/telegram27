@@ -24,6 +24,7 @@ module.exports = {
                     return req.method === 'post';
                 }
             },
+            '/authState': { target },
             '/profile': { target },
             '/friend': { target },
             '/dialog': { target },

@@ -26,17 +26,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(expressSession(config.sessionConfig));
+
+app.use(expressSession(config.get('sessionConfig')));
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 app.use(userController.setAuthState);
 app.use('/', user);
 app.use('/', dialog);
 
 app.use('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '..', 'public', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
 
 // catch 404 and forward to error handler
@@ -48,12 +48,11 @@ app.use((req, res, next) => {
 
 // error handler
 app.use(function (err, req, res, next) {
-    const { message } = err;
+    /* eslint no-unused-vars: 0 */
 
-    // set locals, only providing error in development
+    const { message } = err;
     res.locals.message = message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-
     res.locals.answer.text = message;
 
     res

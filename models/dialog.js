@@ -6,6 +6,11 @@ const errors = require('../constants/errors');
 const Schema = mongoose.Schema;
 
 const dialogSchema = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
+
     participants: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -37,8 +42,9 @@ dialogSchema.statics.create = function (participants) {
         throw new Error(errors.shouldNotBeEmpty('participants'));
     }
 
+    const title = participants.map(p => p.login).join(', ');
     participants = participants.map(p => p.id);
-    const dialog = new this({participants});
+    const dialog = new this({ title, participants });
 
     return dialog.save();
 };
@@ -62,9 +68,16 @@ dialogSchema.methods.addMessage = async function ({text, author}) {
         throw new Error(errors.cannotAddMessageIfNotParticipant);
     }
 
-    this.messages.push({text, author: author.id});
+    const message = {text, author: author.id};
+    this.messages.push(message);
 
     await this.save();
+
+    return {
+        text,
+        author: author.login,
+        date: Date.now()
+    };
 };
 
 dialogSchema.methods.findByText = function (text) {
@@ -95,13 +108,13 @@ dialogSchema.statics.getById = async function (id) {
 dialogSchema.methods.toResponseObject = function () {
     const dObj = this.toObject();
     const id = dObj._id.id.toString('hex');
+    const { participants, messages, title } = dObj;
 
     return {
         id,
-        participants: dObj.participants.map(p => {
-            return {login: p.login};
-        }),
-        messages: dObj.messages.map(m => Object.assign({}, m, {author: m.author.login}))
+        title,
+        participants: participants.map(({ login }) => Object.assign({ login })),
+        messages: messages.map(m => Object.assign({}, m, {author: m.author.login}))
     };
 };
 

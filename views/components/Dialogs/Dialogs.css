@@ -1,0 +1,53 @@
+
+.dialogs-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.dialogs-window {
+    display: flex;
+    border: solid #8BA8FF 2px;
+}
+
+.active-dialog {
+    display: flex;
+    width: 500px;
+    height: 400px;
+}
+
+.action-message {
+    margin: auto;
+}
+
+.dialogs-preview {
+    display: flex;
+    flex-direction: column;
+    border: solid #8BA8FF;
+    border-width: 0 2px 0 0;
+    width: 200px;
+    height: 400px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.dialogs-preview:hover {
+    overflow-y: scroll;
+}
+
+.dialogs-preview::-webkit-scrollbar {
+    width: 7px;
+    border-radius: 2px;
+    margin-right: 3px;
+}
+
+.dialogs-preview::-webkit-scrollbar-thumb {
+    background-color: #7ce4c6;
+    -webkit-border-radius: 20px;
+    border-radius: 20px;
+}
+
+.dialogs-preview::-webkit-scrollbar-track {
+    background-color: rgba(145, 255, 163, 0.71);
+    -webkit-border-radius: 20px;
+    border-radius: 20px;
+}

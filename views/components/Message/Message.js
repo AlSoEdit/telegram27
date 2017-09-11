@@ -1,20 +1,16 @@
 'use strict';
 
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import dateformat from 'dateformat';
 
-import Text from '../Text/Text';
-
 import './Message.css';
 
-export default class Message extends React.Component {
+export default class Message extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            chosen: false
-        };
+        this.state = { chosen: false };
     }
 
     render() {
@@ -35,6 +31,12 @@ export default class Message extends React.Component {
 }
 
 Message.propTypes = {
+    showPreview: PropTypes.bool.isRequired,
+
+    user: PropTypes.shape({
+        login: PropTypes.string.isRequired
+    }).isRequired,
+
     message: PropTypes.shape({
         date: PropTypes.string.isRequired,
         text: PropTypes.string.isRequired,

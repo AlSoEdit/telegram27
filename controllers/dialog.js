@@ -9,7 +9,7 @@ async function addMessage(req, res, next) {
     const dialog = await Dialog.findById(id);
 
     try {
-        await dialog.addMessage({ text, author });
+        res.locals.answer.data = await dialog.addMessage({ text, author });
         res.json(res.locals.answer);
     } catch (err) {
         next(new BadRequestError(err.message));
@@ -18,16 +18,20 @@ async function addMessage(req, res, next) {
 
 async function getById(req, res, next) {
     try {
-        res.locals.answer.user.dialogs = [await Dialog.getById(req.params.id)];
+        res.locals.answer.data = await Dialog.getById(req.params.id);
         res.json(res.locals.answer);
     } catch (err) {
         next(new NotFoundError(err.message));
     }
 }
 
-async function getByUser(req, res) {
-    res.locals.answer.user.dialogs = await Dialog.getByUser(req.user);
-    res.json(res.locals.answer);
+async function getByUser(req, res, next) {
+    try {
+        res.locals.answer.data = await Dialog.getByUser(req.user);
+        res.json(res.locals.answer);
+    } catch (err) {
+        next(new NotFoundError(err.message));
+    }
 }
 
 module.exports = {

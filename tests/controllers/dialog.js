@@ -33,7 +33,7 @@ describe('controllers : dialog', () => {
         await agent.post('/friend').send({ login: login1 });
 
         const res = await agent.get('/dialogs').send();
-        id = res.body.user.dialogs[0].id;
+        id = res.body.data[0].id;
     });
 
     afterEach(() => agent = null);
@@ -45,7 +45,7 @@ describe('controllers : dialog', () => {
             res.status.should.equal(httpStatusCodes.OK);
 
             res = await agent.get(`/dialog/${id}`).send();
-            const dialog = res.body.user.dialogs[0];
+            const dialog = res.body.data;
 
             dialog.messages.length.should.equal(1);
             dialog.messages[0].text.should.equal(text);
@@ -70,13 +70,13 @@ describe('controllers : dialog', () => {
     describe('getById', () => {
         it('get dialog by id', async () => {
             const res = await agent.get(`/dialog/${id}`).send();
-            const { dialogs } = res.body.user;
-            const { participants } = dialogs[0];
+            const dialog = res.body.data;
+            const { participants } = dialog;
 
             res.status.should.equal(httpStatusCodes.OK);
 
-            dialogs[0].id.should.equal(id);
-            dialogs[0].messages.length.should.equal(0);
+            dialog.id.should.equal(id);
+            dialog.messages.length.should.equal(0);
 
             participants.length.should.equal(2);
             participants.some(p => p.login === login1).should.equal(true);
@@ -96,7 +96,7 @@ describe('controllers : dialog', () => {
     describe('getByUser', () => {
         it('get dialogs by user', async () => {
             const res = await agent.get('/dialogs').send();
-            const { dialogs } = res.body.user;
+            const dialogs = res.body.data;
             const { participants } = dialogs[0];
 
             res.status.should.equal(httpStatusCodes.OK);

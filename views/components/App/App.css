@@ -1,5 +1,9 @@
-body {
+body, p {
     margin: 0;
+}
+
+p {
+    text-align: center;
 }
 
 .main {
@@ -7,5 +11,4 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
 }

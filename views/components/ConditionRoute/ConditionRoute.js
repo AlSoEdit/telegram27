@@ -1,14 +1,10 @@
 'use strict';
 
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 
-export default class ConditionRoute extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
+export default class ConditionRoute extends Component {
     render() {
         const { condition, component, path, redirectPath } = this.props;
 
@@ -16,9 +12,10 @@ export default class ConditionRoute extends React.Component {
             <Route
                 exact
                 path={path}
-                render={() => condition
-                    ? component
-                    : <Redirect to={redirectPath}/>
+                render={() =>
+                    condition
+                        ? component
+                        : <Redirect to={redirectPath}/>
                 }
             />
         );
@@ -26,8 +23,8 @@ export default class ConditionRoute extends React.Component {
 }
 
 ConditionRoute.propTypes = {
-    condition: PropTypes.bool,
-    component: PropTypes.element,
-    path: PropTypes.string,
-    redirectPath: PropTypes.string
+    condition: PropTypes.bool.isRequired,
+    component: PropTypes.element.isRequired,
+    path: PropTypes.string.isRequired,
+    redirectPath: PropTypes.string.isRequired
 };

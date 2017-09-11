@@ -1,46 +1,72 @@
 'use strict';
 
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { shouldNotBeEmpty } from '../../../constants/errors';
 import { notAuthenticatedRoutes, authenticatedRoutes } from '../../../constants/routes';
 
-import Profile from '../Profile/Profile';
-import Form from '../Form/Form';
-import ErrorMessage from '../Text/Text';
 import ConditionRoute from '../ConditionRoute/ConditionRoute';
-import Dialogs from '../DialogsContainer/DialogsContainer';
+import Profile from '../Profile/Profile';
+import FormContainer from '../../store/containers/FormContainer';
+import DialogsContainer from '../../store/containers/DialogsContainer';
 
 import './PageContent.css';
 
-export default class PageContent extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
+export default class PageContent extends Component {
     render() {
-        const { user, errorText, onSubmit } = this.props;
+        const { user, errorText } = this.props;
         const isAuthenticated = user !== null;
-        const notAuthRoutes = Object.keys(notAuthenticatedRoutes).map(k => notAuthenticatedRoutes[k]);
+        const { signup, signin } = notAuthenticatedRoutes;
 
         return (
             <div className="page-content">
-                {isAuthenticated && <Form
-                    onSubmit={onSubmit}
-                    formData={Object.assign({}, authenticatedRoutes.signout, {fields: []})}
-                />}
+                {isAuthenticated && <FormContainer formData={authenticatedRoutes.signout} />}
 
-                <ErrorMessage text={errorText}/>
-                <ConditionRoute condition={isAuthenticated} component={<Profile/>} path="/profile" redirectPath="/signin"/>
-                <ConditionRoute condition={isAuthenticated} component={null} path="/signout" redirectPath="/signin"/>
-                <ConditionRoute condition={isAuthenticated} component={<Dialogs onSubmit={onSubmit} user={user}/>} path="/dialogs" redirectPath="/signin"/>
+                <p className="error-text">{errorText || ''}</p>
 
-                {notAuthRoutes.map(l =>
+                <ConditionRoute
+                    condition={isAuthenticated}
+                    component={<Profile user={user}/>}
+                    path="/profile"
+                    redirectPath="/signin"
+                />
+
+                <ConditionRoute
+                    condition={isAuthenticated}
+                    component={null}
+                    path="/signout"
+                    redirectPath="/signin"
+                />
+
+                <ConditionRoute
+                    condition={isAuthenticated}
+                    component={<DialogsContainer />}
+                    path="/dialogs"
+                    redirectPath="/signin"
+                />
+
+                <ConditionRoute
+                    condition={isAuthenticated}
+                    component={null}
+                    path="/"
+                    redirectPath="/signin"
+                />
+
+                {[signup, signin].map(l =>
                     <ConditionRoute
                         condition={!isAuthenticated}
                         component={
-                            <Form
-                                onSubmit={onSubmit}
+                            <FormContainer
                                 formData={l}
+                                inputsValidator={({ login, password }) => {
+                                    if (login.length === 0) {
+                                        throw new Error(shouldNotBeEmpty('login'));
+                                    } else if (password === 0) {
+                                        throw new Error(shouldNotBeEmpty('password'));
+                                    }
+
+                                    return true;
+                                }}
                             />
                         }
                         path={l.url}
@@ -53,7 +79,8 @@ export default class PageContent extends React.Component {
 }
 
 PageContent.propTypes = {
-    onSubmit: PropTypes.func,
-    isAuthenticated: PropTypes.bool,
-    errorText: PropTypes.string
+    errorText: PropTypes.string,
+    user: PropTypes.shape({
+        login: PropTypes.string.isRequired
+    }).isRequired
 };

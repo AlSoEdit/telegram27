@@ -21,18 +21,14 @@ function signIn(req, res, next) {
         if (!user) {
             next(new BadRequestError(errors.wrongLoginOrPassword));
         } else {
-            res.locals.answer.user = user.toResponseObject();
-            req.logIn(user, () => res.json(res.locals.answer));
+            req.logIn(user, () => getAuthState(req, res, next));
         }
     })(req, res, next);
 }
 
 function signOut(req, res) {
-    req.session.destroy();
     req.logout();
-
-    res.locals.answer.user = null;
-    res.json(res.locals.answer);
+    getAuthState(req, res);
 }
 
 function setAuthState(req, res, next) {
@@ -40,6 +36,10 @@ function setAuthState(req, res, next) {
     res.locals.answer.user = req.user ? req.user.toResponseObject() : null;
 
     next();
+}
+
+function getAuthState(req, res) {
+    setAuthState(req, res, () => res.json(res.locals.answer));
 }
 
 function passIfAuthenticated(req, res, next) {
@@ -56,7 +56,7 @@ function getProfile(req, res) {
 }
 
 async function getFriends(req, res) {
-    res.locals.answer.user.friends = await req.user.getFriends();
+    res.locals.answer.data = await req.user.getFriends();
     res.json(res.locals.answer);
 }
 
@@ -78,6 +78,7 @@ module.exports = {
     signOut,
     passIfAuthenticated,
     setAuthState,
+    getAuthState,
     getProfile,
     getFriends,
     addFriend

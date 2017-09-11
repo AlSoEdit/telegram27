@@ -3,31 +3,30 @@
     display: flex;
     flex-direction: column;
     border: solid #8BA8FF;
-    border-width: 0 3px 3px;
+    border-width: 0 0 2px;
 }
 
 .dialog-title {
     background-color: #5587FF;
-    margin: 0;
     padding: 3px 0;
-    text-align: center;
     font-size: 0.8em;
 }
 
 .messages-container {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
-    height: 300px;
-    width: 700px;
-    padding: 0 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 500px;
+    padding: 10px 10px 0;
     overflow-y: scroll;
 }
 
-.messages-container.preview {
+.messages-container--style-preview {
     height: 50px;
-    width: 200px;
     padding: 0;
-    justify-content: flex-start;
     overflow-y: hidden;
 }
 

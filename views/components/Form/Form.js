@@ -1,6 +1,6 @@
 'use strict';
 
-import React from 'react';
+import React, { Component }  from 'react';
 import PropTypes from 'prop-types';
 
 import './Form.css';
@@ -14,27 +14,37 @@ function setInitialValues(fields, hiddenValues) {
         }, Object.assign({}, hiddenValues));
 }
 
-export default class Form extends React.Component {
+export default class Form extends Component {
     constructor(props) {
         super(props);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
-        let inputValues = setInitialValues(this.props.formData.fields, this.props.hiddenInputs);
+        const inputValues = setInitialValues(this.props.formData.fields, this.props.hiddenInputs);
         this.state = { inputValues };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const inputValues = setInitialValues(nextProps.formData.fields, nextProps.hiddenInputs);
+        this.setState({ inputValues });
     }
 
     async onSubmit(e) {
         e.preventDefault();
 
         const url = e.target.action;
-        const { inputValues } = this.state;
+        let { inputValues } = this.state;
         const { method } = e.target;
+        const { additionalAction } = this.props.formData;
+        const { inputsValidator, onSubmit, onValidationFail } = this.props;
 
-        this.props.onSubmit({ url, method, inputValues });
-        this.setState({
-            inputValues: setInitialValues(this.props.formData.fields, this.props.hiddenInputs)
-        });
+        try {
+            if (inputsValidator(inputValues)) {
+                onSubmit({ url, method, inputValues, additionalAction });
+            }
+        } catch (err) {
+            onValidationFail(err.message);
+        }
     }
 
     onChange(e) {
@@ -54,12 +64,13 @@ export default class Form extends React.Component {
                 value={this.state.inputValues[valueName]}
                 type={valueName}
                 onChange={this.onChange}
+                key={valueName}
             />
         ));
 
         return (
             <form
-                className={'form'}
+                className={inputs.length === 1 ? 'form form--orientation-horizontal' : 'form'}
                 method={method}
                 action={url}
                 onSubmit={this.onSubmit}
@@ -77,13 +88,17 @@ export default class Form extends React.Component {
 
 Form.propTypes = {
     onSubmit: PropTypes.func.isRequired,
-    isLink: PropTypes.bool,
+    inputsValidator: PropTypes.func.isRequired,
+    onValidationFail: PropTypes.func,
+    additionalAction: PropTypes.func,
+
     hiddenInputs: PropTypes.arrayOf(
         PropTypes.shape({
             name: PropTypes.string,
             value: PropTypes.string
         })
     ),
+
     formData: PropTypes.shape({
         url: PropTypes.string.isRequired,
         fields: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -93,9 +108,6 @@ Form.propTypes = {
 };
 
 Form.defaultProps = {
-    text: 'submit',
-    hiddenInputs: [],
-    formData: {
-        fields: []
-    }
+    inputsValidator: () => true,
+    hiddenInputs: []
 };

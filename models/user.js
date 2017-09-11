@@ -30,7 +30,7 @@ const userSchema = new Schema({
 });
 
 userSchema.statics.create = async function ({ login, password }) {
-    if (await User.findOne({login})) {
+    if (await User.findOne({ login })) {
         throw new Error(errors.uniqueFieldAlreadyExists('login'));
     } else if (!login) {
         throw new Error(errors.fieldRequired('login'));

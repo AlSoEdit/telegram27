@@ -4,3 +4,10 @@
     flex-direction: column;
     align-items: center;
 }
+
+.error-text {
+    min-height: 30px;
+    margin: 5px 0;
+    font-size: .8em;
+    text-align: center;
+}

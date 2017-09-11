@@ -10,7 +10,8 @@ router
     .post('/signout', userController.passIfAuthenticated, userController.signOut);
 
 router
-    .get('/profile', userController.passIfAuthenticated, userController.getProfile);
+    .get('/profile', userController.passIfAuthenticated, userController.getProfile)
+    .get('/authState', userController.getAuthState);
 
 router
     .post('/friend', userController.passIfAuthenticated, userController.addFriend)

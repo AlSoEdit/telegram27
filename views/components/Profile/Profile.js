@@ -1,38 +1,24 @@
 'use strict';
 
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import './Profile.css';
 
-export default class Profile extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            user: null
-        };
-    }
-
-    async componentDidMount() {
-        const res = await fetch('/profile', {
-            method: 'get',
-            credentials: 'same-origin',
-            Accept: 'application/json'
-        });
-
-        const json = await res.json();
-        const { user } = json;
-
-        this.setState({
-            user
-        });
-    }
-
+export default class Profile extends Component {
     render() {
+        const { user } = this.props;
+
         return (
             <p className="login">
-                Login: {this.state.user && this.state.user.login}.
+                {user ? `Login: ${user.login}` : null}
             </p>
         );
     }
 }
+
+Profile.propTypes = {
+    user: PropTypes.shape({
+        login: PropTypes.string.isRequired
+    }).isRequired
+};

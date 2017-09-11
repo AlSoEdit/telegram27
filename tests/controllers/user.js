@@ -167,7 +167,7 @@ describe('controllers : User', () => {
                 err.response.status.should.equal(httpStatusCodes.BAD_REQUEST);
 
                 const res = await agent.get('/friends').send();
-                res.body.user.friends.length.should.equal(1);
+                res.body.data.length.should.equal(1);
             }
         });
 
@@ -175,7 +175,7 @@ describe('controllers : User', () => {
             await agent.post('/friend').send({ login: login2 });
 
             const res = await agent.get('/dialogs').send();
-            const { dialogs } = res.body.user;
+            const dialogs = res.body.data;
             const { participants } = dialogs[0];
 
             res.status.should.equal(httpStatusCodes.OK);
