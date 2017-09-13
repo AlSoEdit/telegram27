@@ -4,6 +4,7 @@
     flex-direction: column;
     border: solid #8BA8FF;
     border-width: 0 0 2px;
+    flex-shrink: 0;
 }
 
 .dialog-title {
