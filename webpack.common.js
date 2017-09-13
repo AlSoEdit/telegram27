@@ -11,7 +11,7 @@ const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
 });
 
 module.exports = {
-    entry: path.join(__dirname, 'views', 'index.js'),
+    entry: ['babel-polyfill', path.join(__dirname, 'views', 'index.js')],
     module: {
         loaders: [
             {
