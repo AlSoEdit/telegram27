@@ -27,7 +27,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(expressSession(config.get('sessionConfig')));
+const sessionParser = config.get('sessionParser');
+app.use(sessionParser);
 app.use(passport.initialize());
 app.use(passport.session());
 

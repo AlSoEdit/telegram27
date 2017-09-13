@@ -55,6 +55,7 @@ export default class PageContent extends Component {
                 {[signup, signin].map(l =>
                     <ConditionRoute
                         condition={!isAuthenticated}
+                        key={l.url}
                         component={
                             <FormContainer
                                 formData={l}
@@ -82,5 +83,5 @@ PageContent.propTypes = {
     errorText: PropTypes.string,
     user: PropTypes.shape({
         login: PropTypes.string.isRequired
-    }).isRequired
+    })
 };

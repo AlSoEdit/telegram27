@@ -1,7 +1,7 @@
 'use strict';
 
 import { connect } from 'react-redux';
-import { makeRequest} from '../actions/request';
+import { makeRequest } from '../actions/request';
 import App from '../../components/App/App';
 
 const requestData = {

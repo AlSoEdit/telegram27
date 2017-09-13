@@ -19,14 +19,10 @@ export default class Form extends Component {
         super(props);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onActionSubmit = this.onActionSubmit.bind(this);
 
         const inputValues = setInitialValues(this.props.formData.fields, this.props.hiddenInputs);
         this.state = { inputValues };
-    }
-
-    componentWillReceiveProps(nextProps) {
-        const inputValues = setInitialValues(nextProps.formData.fields, nextProps.hiddenInputs);
-        this.setState({ inputValues });
     }
 
     async onSubmit(e) {
@@ -36,7 +32,7 @@ export default class Form extends Component {
         let { inputValues } = this.state;
         const { method } = e.target;
         const { additionalAction } = this.props.formData;
-        const { inputsValidator, onSubmit, onValidationFail } = this.props;
+        const { inputsValidator, onSubmit, onValidationFail, formData, hiddenInputs } = this.props;
 
         try {
             if (inputsValidator(inputValues)) {
@@ -45,6 +41,27 @@ export default class Form extends Component {
         } catch (err) {
             onValidationFail(err.message);
         }
+
+        inputValues = setInitialValues(formData.fields, hiddenInputs);
+        this.setState({ inputValues });
+    }
+
+    async onActionSubmit(e) {
+        e.preventDefault();
+
+        let { inputValues } = this.state;
+        const { inputsValidator, onActionSubmit, onValidationFail, formData, hiddenInputs } = this.props;
+
+        try {
+            if (inputsValidator(inputValues)) {
+                onActionSubmit({ ...inputValues, ...hiddenInputs });
+            }
+        } catch (err) {
+            onValidationFail(err.message);
+        }
+
+        inputValues = setInitialValues(formData.fields, hiddenInputs);
+        this.setState({ inputValues });
     }
 
     onChange(e) {
@@ -55,6 +72,7 @@ export default class Form extends Component {
     }
 
     render() {
+        const { onActionSubmit } = this.props;
         const { url, fields, method, text } = this.props.formData;
         const inputs = fields.map(valueName => (
             <input
@@ -73,7 +91,7 @@ export default class Form extends Component {
                 className={inputs.length === 1 ? 'form form--orientation-horizontal' : 'form'}
                 method={method}
                 action={url}
-                onSubmit={this.onSubmit}
+                onSubmit={onActionSubmit ? this.onActionSubmit : this.onSubmit}
             >
                 {inputs}
                 <input
@@ -87,17 +105,13 @@ export default class Form extends Component {
 }
 
 Form.propTypes = {
+    onActionSubmit: PropTypes.func,
     onSubmit: PropTypes.func.isRequired,
     inputsValidator: PropTypes.func.isRequired,
     onValidationFail: PropTypes.func,
     additionalAction: PropTypes.func,
 
-    hiddenInputs: PropTypes.arrayOf(
-        PropTypes.shape({
-            name: PropTypes.string,
-            value: PropTypes.string
-        })
-    ),
+    hiddenInputs: PropTypes.object,
 
     formData: PropTypes.shape({
         url: PropTypes.string.isRequired,
@@ -109,5 +123,5 @@ Form.propTypes = {
 
 Form.defaultProps = {
     inputsValidator: () => true,
-    hiddenInputs: []
+    hiddenInputs: {}
 };

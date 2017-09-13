@@ -19,7 +19,24 @@ export default class Dialogs extends Component {
     }
 
     componentDidMount() {
-        this.props.fetchDialogs();
+        const { user, wsConnected, fetchDialogs } = this.props;
+
+        fetchDialogs();
+        if (user && !wsConnected) {
+            this.props.wsOpenConnection();
+        }
+    }
+
+    componentDidUpdate() {
+        const { user, wsConnected } = this.props;
+
+        if (!user && wsConnected) {
+            this.props.wsCloseConnection();
+        }
+    }
+
+    componentWillUnmount() {
+        this.props.wsCloseConnection();
     }
 
     chooseDialog(chosenDialogId) {
@@ -28,7 +45,7 @@ export default class Dialogs extends Component {
     }
 
     render() {
-        const { user, dialogs } = this.props;
+        const { user, dialogs, wsSendChatMessage } = this.props;
         const { chosenDialogId } = this.state;
         const friendFormData = Object.assign({}, friend, { additionalAction: this.props.fetchDialogs });
         const chosenDialog = chosenDialogId
@@ -67,6 +84,7 @@ export default class Dialogs extends Component {
                                     user={user}
                                     showPreview={false}
                                     chooseDialog={this.chooseDialog}
+                                    sendMessage={wsSendChatMessage}
                                 />
                             : <p className="action-message">Choose dialog</p>
                         }
@@ -78,6 +96,10 @@ export default class Dialogs extends Component {
 }
 
 Dialogs.propTypes = {
+    wsSendChatMessage: PropTypes.func.isRequired,
+    wsOpenConnection: PropTypes.func.isRequired,
+    wsCloseConnection: PropTypes.func.isRequired,
+    wsConnected: PropTypes.bool.isRequired,
     fetchDialogById: PropTypes.func.isRequired,
     fetchDialogs: PropTypes.func.isRequired,
 
@@ -95,7 +117,7 @@ Dialogs.propTypes = {
 
             messages: PropTypes.arrayOf(PropTypes.shape({
                 text: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
+                date: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
                 author: PropTypes.string.isRequired
             })).isRequired
         })

@@ -38,7 +38,7 @@ Message.propTypes = {
     }).isRequired,
 
     message: PropTypes.shape({
-        date: PropTypes.string.isRequired,
+        date: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
         text: PropTypes.string.isRequired,
         author: PropTypes.string.isRequired
     }).isRequired

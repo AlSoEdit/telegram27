@@ -10,6 +10,11 @@ import PageContent from '../PageContent/PageContent';
 import './App.css';
 
 export default class App extends Component {
+    constructor(props) {
+        super(props);
+        this.ws = null;
+    }
+
     componentDidMount() {
         this.props.onMount();
     }
@@ -38,7 +43,7 @@ export default class App extends Component {
 App.propTypes = {
     onMount: PropTypes.func.isRequired,
     user: PropTypes.shape({
-        login: PropTypes.string
-    }).isRequired,
+        login: PropTypes.string.isRequired
+    }),
     errorText: PropTypes.string.isRequired
 };

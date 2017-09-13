@@ -1,6 +1,8 @@
 'use strict';
 
+const webpack = require('webpack');
 const path = require('path');
+const config = require('config');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
     template: `${__dirname}/views/index.html`,
@@ -59,5 +61,12 @@ module.exports = {
         path: path.join(__dirname, 'public'),
     },
 
-    plugins: [HTMLWebpackPluginConfig]
+    plugins: [
+        HTMLWebpackPluginConfig,
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+            'process.env.APP_NAME': JSON.stringify(config.APP_NAME),
+            'process.env.SOCKET_TYPE': JSON.stringify(config.SOCKET_TYPE)
+        })
+    ]
 };

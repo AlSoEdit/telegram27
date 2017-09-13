@@ -12,22 +12,6 @@ export default class Dialog extends Component {
     constructor(props) {
         super(props);
         this.bottom = null;
-        this.timeoutId = null;
-    }
-
-    componentDidMount() {
-        function a() {
-            this.timeoutId = setTimeout(() => {
-                this.props.fetchDialogById(this.props.dialog.id);
-                a.call(this);
-            }, 3000);
-        }
-
-        a.call(this);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timeoutId);
     }
 
     componentDidUpdate() {
@@ -37,11 +21,9 @@ export default class Dialog extends Component {
     }
 
     render() {
-        const { user, dialog, showPreview } = this.props;
+        const { user, dialog, showPreview, sendMessage } = this.props;
         const { id, title, messages } = dialog;
-        const additionalAction = authenticatedRoutes.message.additionalAction.bind(null, id);
-        const messageFormData = Object.assign({}, authenticatedRoutes.message, { additionalAction });
-        const hiddenInputs = { id: id };
+        const hiddenInputs = { id };
 
         let compMessages = showPreview ? messages.slice(-1) : messages;
         compMessages = compMessages.map((m, index) =>
@@ -73,9 +55,10 @@ export default class Dialog extends Component {
                     showPreview
                         ? null
                         : <FormContainer
-                            formData={messageFormData}
+                            formData={authenticatedRoutes.message}
                             hiddenInputs={hiddenInputs}
                             inputsValidator={({ text }) => text.length > 0}
+                            onActionSubmit={sendMessage && sendMessage.bind(null, id, user.login)}
                         />
                 }
             </div>
@@ -84,6 +67,7 @@ export default class Dialog extends Component {
 }
 
 Dialog.propTypes = {
+    sendMessage: PropTypes.func,
     chooseDialog: PropTypes.func.isRequired,
     showPreview: PropTypes.bool,
 
@@ -102,7 +86,7 @@ Dialog.propTypes = {
 
         messages: PropTypes.arrayOf(PropTypes.shape({
             text: PropTypes.string.isRequired,
-            date: PropTypes.string.isRequired,
+            date: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
             author: PropTypes.string.isRequired
         })).isRequired
     })

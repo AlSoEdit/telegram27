@@ -24,7 +24,7 @@ export default class ConditionRoute extends Component {
 
 ConditionRoute.propTypes = {
     condition: PropTypes.bool.isRequired,
-    component: PropTypes.element.isRequired,
+    component: PropTypes.element,
     path: PropTypes.string.isRequired,
     redirectPath: PropTypes.string.isRequired
 };

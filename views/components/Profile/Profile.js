@@ -20,5 +20,5 @@ export default class Profile extends Component {
 Profile.propTypes = {
     user: PropTypes.shape({
         login: PropTypes.string.isRequired
-    }).isRequired
+    })
 };

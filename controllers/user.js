@@ -21,7 +21,7 @@ function signIn(req, res, next) {
         if (!user) {
             next(new BadRequestError(errors.wrongLoginOrPassword));
         } else {
-            req.logIn(user, () => getAuthState(req, res, next));
+            req.logIn(user, () => getAuthState(req, res));
         }
     })(req, res, next);
 }
@@ -39,7 +39,9 @@ function setAuthState(req, res, next) {
 }
 
 function getAuthState(req, res) {
-    setAuthState(req, res, () => res.json(res.locals.answer));
+    setAuthState(req, res, () => {
+        res.json(res.locals.answer);
+    });
 }
 
 function passIfAuthenticated(req, res, next) {

@@ -4,8 +4,7 @@ import actions from '../views/store/actions';
 
 const {
     setUser, clearUser,
-    setDialogs, updateDialog,
-    addMessage,
+    setDialogs, updateDialog
 } = actions;
 
 const signin = {
@@ -62,8 +61,7 @@ const message = {
     url: '/message',
     text: 'Send',
     method: 'post',
-    fields: ['text'],
-    additionalAction: addMessage
+    fields: ['text']
 };
 
 export const fetchOptions = {

@@ -10,5 +10,6 @@ module.exports = {
     alreadyAuthenticated: 'Already authenticated',
     wrongLoginOrPassword: 'Wrong login or password',
     notAuthenticated: 'Not authenticated',
-    alreadyFriends: 'Already in friends list'
+    alreadyFriends: 'Already in friends list',
+    canNotConnectToServer: 'Can not connect to server'
 };
