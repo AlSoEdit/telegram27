@@ -8,8 +8,8 @@
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=production node index.js",
     "start-dev": "cross-env NODE_ENV=development concurrently \"npm run front-server-dev\" \"node index.js\"",
-    "front-server-dev": "webpack-dev-server",
-    "build": "webpack",
+    "front-dev": "webpack-dev-server --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
     "test": "cross-env NODE_ENV=test mocha --timeout 5000 --recursive ./tests"
   },
   "dependencies": {
@@ -70,6 +70,7 @@
     "stylelint": "^8.0.0",
     "stylelint-config-standard": "^17.0.0",
     "webpack": "^3.5.5",
-    "webpack-dev-server": "^2.7.1"
+    "webpack-dev-server": "^2.7.1",
+    "webpack-merge": "^4.1.0"
   }
 }

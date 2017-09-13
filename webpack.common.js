@@ -10,31 +10,8 @@ const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
     inject: 'body'
 });
 
-const target = 'http://localhost:8080';
-
 module.exports = {
     entry: path.join(__dirname, 'views', 'index.js'),
-    devServer: {
-        inline: true,
-        port: 3000,
-        historyApiFallback: true,
-        host: 'localhost',
-        proxy: {
-            '/sign.*?': {
-                target,
-                bypass: function(req) {
-                    return req.method === 'post';
-                }
-            },
-            '/authState': { target },
-            '/profile': { target },
-            '/friend': { target },
-            '/dialog': { target },
-            '/dialogs': { target },
-            '/message': { target }
-        }
-    },
-
     module: {
         loaders: [
             {
