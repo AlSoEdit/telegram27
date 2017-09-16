@@ -6,7 +6,7 @@ const config = require('config');
 
 const sessionParser = config.get('sessionParser');
 
-const port = process.env.PORT || config.get('port');
+const port = process.env.PORT || config.get('PORT');
 
 app.set('port', port);
 const server = http.createServer(app);

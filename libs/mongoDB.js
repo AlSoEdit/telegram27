@@ -3,9 +3,10 @@
 const config = require('config');
 const mongoose = require('mongoose');
 
-const mongoUri = config.get('mongoUri');
+const MONGO_URI = config.get('MONGO_URI');
+
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://${mongoUri}`, {
+mongoose.connect(`mongodb://${MONGO_URI}`, {
     useMongoClient: true,
     promiseLibrary: global.Promise
 });

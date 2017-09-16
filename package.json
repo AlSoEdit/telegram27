@@ -6,10 +6,12 @@
     "node": "7.7.2"
   },
   "scripts": {
-    "start": "npm run build && cross-env NODE_ENV=production node index.js",
+    "start": "npm run build-prod && cross-env NODE_ENV=production node index.js",
+    "build-prod": "webpack --config webpack.prod.js",
+    "start-docker": "npm run build-common && cross-env NODE_ENV=development node index.js",
+    "build-common": "webpack --config webpack.common.js",
     "start-dev": "cross-env NODE_ENV=development concurrently \"npm run front-dev\" \"node index.js\"",
     "front-dev": "webpack-dev-server --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
     "test": "cross-env NODE_ENV=test mocha --timeout 5000 --recursive ./tests"
   },
   "dependencies": {
@@ -48,6 +50,7 @@
     "@types/mocha": "^2.2.43",
     "@types/passport": "^0.3.4",
     "@types/react": "^16.0.5",
+    "@types/webpack": "^3.0.10",
     "@types/ws": "^3.0.2",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

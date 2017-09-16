@@ -8,7 +8,9 @@ RUN cd /app && npm install
 
 COPY . /app
 
+ENV MONGO_URI mongoDB
+
 EXPOSE 3000
 EXPOSE 8080
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start-docker"]

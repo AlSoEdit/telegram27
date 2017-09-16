@@ -1,6 +1,11 @@
 
-version: '3'
+version: "2.0"
 services:
+  mongoDB:
+    image: mongo
+    ports:
+      - "27017:27017"
+
   web:
     build: .
     ports:
@@ -8,8 +13,3 @@ services:
       - "8080:8080"
     links:
       - mongoDB
-
-  mongoDB:
-    image: mongo
-    ports:
-      - "27017:27017"
