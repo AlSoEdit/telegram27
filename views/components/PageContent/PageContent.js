@@ -14,7 +14,7 @@ import './PageContent.css';
 
 export default class PageContent extends Component {
     render() {
-        const { user, errorText } = this.props;
+        const { user, responseText } = this.props;
         const isAuthenticated = user !== null;
         const { signup, signin } = notAuthenticatedRoutes;
 
@@ -22,7 +22,11 @@ export default class PageContent extends Component {
             <div className="page-content">
                 {isAuthenticated && <FormContainer formData={authenticatedRoutes.signout} />}
 
-                <p className="error-text">{errorText || ''}</p>
+                <p
+                    className={`response-text${responseText.isError ? ' response-text--type-error' : ''}`}
+                >
+                    {responseText.text || ''}
+                </p>
 
                 <ConditionRoute
                     condition={isAuthenticated}
@@ -80,7 +84,7 @@ export default class PageContent extends Component {
 }
 
 PageContent.propTypes = {
-    errorText: PropTypes.string,
+    responseText: PropTypes.string,
     user: PropTypes.shape({
         login: PropTypes.string.isRequired
     })

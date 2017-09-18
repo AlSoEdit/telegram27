@@ -23,7 +23,7 @@ export default class Dialog extends Component {
     render() {
         const { user, dialog, showPreview, sendMessage } = this.props;
         const { id, title, messages } = dialog;
-        const hiddenInputs = { id };
+        const hiddenInputs = { id, author: user.login };
 
         let compMessages = showPreview ? messages.slice(-1) : messages;
         compMessages = compMessages.map((m, index) =>
@@ -58,7 +58,7 @@ export default class Dialog extends Component {
                             formData={authenticatedRoutes.message}
                             hiddenInputs={hiddenInputs}
                             inputsValidator={({ text }) => text.length > 0}
-                            onActionSubmit={sendMessage && sendMessage.bind(null, id, user.login)}
+                            onActionSubmit={sendMessage}
                         />
                 }
             </div>

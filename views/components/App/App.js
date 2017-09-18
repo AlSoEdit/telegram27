@@ -20,7 +20,7 @@ export default class App extends Component {
     }
 
     render() {
-        const { user, errorText } = this.props;
+        const { user, responseText } = this.props;
         const links = user ? authNav : notAuthNav;
 
         return (
@@ -32,7 +32,7 @@ export default class App extends Component {
                     />
                     <PageContent
                         user={user}
-                        errorText={errorText}
+                        responseText={responseText}
                     />
                 </div>
             </HashRouter>
@@ -45,5 +45,5 @@ App.propTypes = {
     user: PropTypes.shape({
         login: PropTypes.string.isRequired
     }),
-    errorText: PropTypes.string.isRequired
+    responseText: PropTypes.string.isRequired
 };

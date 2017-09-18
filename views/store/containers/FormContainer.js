@@ -3,12 +3,12 @@
 import Form from '../../components/Form/Form';
 import { connect } from 'react-redux';
 import { makeRequest } from '../actions/request';
-import { setError } from '../actions/error';
+import { setResponseText } from '../actions/response-text';
 
 function mapDispatchToProps(dispatch) {
     return {
         onSubmit: ({ ...args }) => dispatch(makeRequest(args)),
-        onValidationFail: (errorMessage) => dispatch(setError(errorMessage))
+        onValidationFail: (errorMessage) => dispatch(setResponseText(errorMessage))
     };
 }
 

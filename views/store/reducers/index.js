@@ -2,13 +2,13 @@
 
 import { combineReducers } from 'redux';
 import user from './user';
-import error from './error';
+import responseText from './response-text';
 import dialogs from './dialog';
 import request from './request';
 
 export default combineReducers({
     user,
-    errorText: error,
+    responseText,
     dialogs,
     wsConnected: request
 });

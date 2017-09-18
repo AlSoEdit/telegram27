@@ -18,7 +18,9 @@ function mapDispatchToProps(dispatch) {
     let sock = null;
 
     return {
-        fetchDialogs: () => dispatch(makeRequest(dialogs)),
+        fetchDialogs: () => {
+            dispatch(makeRequest(dialogs));
+        },
 
         fetchDialogById: (id) => {
             let { url, method, additionalAction } = dialog;
@@ -41,11 +43,11 @@ function mapDispatchToProps(dispatch) {
             dispatch(wsOnClose());
         },
 
-        wsSendChatMessage: (dialogId, author, { text }) => {
+        wsSendChatMessage: ({ id, author, text }) => {
             const type = ADD_MESSAGE;
             const date = Date.now();
             const payload = {
-                dialogId,
+                id,
                 message: {
                     text,
                     author,

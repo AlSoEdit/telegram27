@@ -18,8 +18,8 @@ server.on('listening', () => console.info(`Server started on ${port}`));
 const WebSocket = require('ws');
 
 const wsServer = new WebSocket.Server({ server });
-const { wsAddMessage } = require('./controllers/dialog');
+const wsController = require('./controllers/ws-controller');
 
 wsServer.on('connection', (sock, req) => {
-    sessionParser(req, {}, () => wsAddMessage(sock, req, wsServer.clients));
+    sessionParser(req, {}, () => wsController(sock, req, wsServer.clients));
 });

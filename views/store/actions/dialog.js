@@ -17,11 +17,11 @@ function setDialogs(dialogs) {
 }
 
 const ADD_MESSAGE = 'ADD_MESSAGE';
-function addMessage({ dialogId, message }) {
+function addMessage({ id, message }) {
     return {
         type: ADD_MESSAGE,
         payload: {
-            dialogId,
+            id,
             message
         }
     };

@@ -5,74 +5,56 @@ import PropTypes from 'prop-types';
 
 import './Form.css';
 
-function setInitialValues(fields, hiddenValues) {
-    return fields
-        .reduce((acc, v) => {
-            acc[v] = '';
-
-            return acc;
-        }, Object.assign({}, hiddenValues));
-}
-
 export default class Form extends Component {
     constructor(props) {
         super(props);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
-        this.onActionSubmit = this.onActionSubmit.bind(this);
 
-        const inputValues = setInitialValues(this.props.formData.fields, this.props.hiddenInputs);
+        const inputValues = this.getInitialValues();
         this.state = { inputValues };
+    }
+
+    getInitialValues() {
+        const { formData, hiddenInputs } = this.props;
+
+        return formData.fields
+            .reduce((acc, v) => {
+                acc[v] = '';
+
+                return acc;
+            }, Object.assign({}, hiddenInputs));
     }
 
     async onSubmit(e) {
         e.preventDefault();
 
-        const url = e.target.action;
         let { inputValues } = this.state;
-        const { method } = e.target;
-        const { additionalAction } = this.props.formData;
-        const { inputsValidator, onSubmit, onValidationFail, formData, hiddenInputs } = this.props;
+        const { inputsValidator, onSubmit, onActionSubmit, onValidationFail, formData } = this.props;
+
+        const submitFunc = onActionSubmit ? onActionSubmit : onSubmit;
+        const submitArgs = onActionSubmit ? inputValues : Object.assign({}, formData, { inputValues });
 
         try {
             if (inputsValidator(inputValues)) {
-                onSubmit({ url, method, inputValues, additionalAction });
+                submitFunc(submitArgs);
             }
         } catch (err) {
             onValidationFail(err.message);
         }
 
-        inputValues = setInitialValues(formData.fields, hiddenInputs);
-        this.setState({ inputValues });
-    }
-
-    async onActionSubmit(e) {
-        e.preventDefault();
-
-        let { inputValues } = this.state;
-        const { inputsValidator, onActionSubmit, onValidationFail, formData, hiddenInputs } = this.props;
-
-        try {
-            if (inputsValidator(inputValues)) {
-                onActionSubmit({ ...inputValues, ...hiddenInputs });
-            }
-        } catch (err) {
-            onValidationFail(err.message);
-        }
-
-        inputValues = setInitialValues(formData.fields, hiddenInputs);
+        inputValues = this.getInitialValues();
         this.setState({ inputValues });
     }
 
     onChange(e) {
         const { name, value } = e.target;
-        const newValues = Object.assign({}, this.state.inputValues, { [name]: value });
+        const inputValues = Object.assign({}, this.state.inputValues, { [name]: value });
 
-        this.setState({ inputValues: newValues });
+        this.setState({ inputValues });
     }
 
     render() {
-        const { onActionSubmit } = this.props;
         const { url, fields, method, text } = this.props.formData;
         const inputs = fields.map(valueName => (
             <input
@@ -91,7 +73,7 @@ export default class Form extends Component {
                 className={inputs.length === 1 ? 'form form--orientation-horizontal' : 'form'}
                 method={method}
                 action={url}
-                onSubmit={onActionSubmit ? this.onActionSubmit : this.onSubmit}
+                onSubmit={this.onSubmit}
             >
                 {inputs}
                 <input
@@ -109,7 +91,6 @@ Form.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     inputsValidator: PropTypes.func.isRequired,
     onValidationFail: PropTypes.func,
-    additionalAction: PropTypes.func,
 
     hiddenInputs: PropTypes.object,
 

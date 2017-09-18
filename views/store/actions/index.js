@@ -1,11 +1,11 @@
 'use strict';
 
-import * as user from './user';
-import * as error from './error';
-import * as dialog from './dialog';
-import * as request from './request';
+const user = require('./user');
+const error = require('./response-text');
+const dialog = require('./dialog');
+const request = require('./request');
 
-export default {
+module.exports = {
     ...user,
     ...error,
     ...dialog,

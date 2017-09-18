@@ -5,9 +5,14 @@
     align-items: center;
 }
 
-.error-text {
+.response-text {
     min-height: 30px;
     margin: 5px 0;
     font-size: .8em;
     text-align: center;
+    color: rgba(55, 255, 66, 0.71);
+}
+
+.response-text--type-error {
+    color: rgba(255, 16, 53, 0.71);
 }

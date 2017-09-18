@@ -1,11 +1,16 @@
 'use strict';
 
-import actions from '../views/store/actions';
+const actions = require('../views/store/actions');
 
 const {
     setUser, clearUser,
     setDialogs, updateDialog
 } = actions;
+
+const authState = {
+    url: '/authState',
+    method: 'get'
+};
 
 const signin = {
     url: '/signin',
@@ -64,7 +69,7 @@ const message = {
     fields: ['text']
 };
 
-export const fetchOptions = {
+const fetchOptions = {
     method: 'post',
     credentials: 'same-origin',
     headers: {
@@ -73,20 +78,27 @@ export const fetchOptions = {
     }
 };
 
-export const notAuthNav = [signin, signup];
+const notAuthNav = [signin, signup];
 
-export const authNav = [profile, dialogs];
+const authNav = [profile, dialogs];
 
-export const notAuthenticatedRoutes = {
+const notAuthenticatedRoutes = {
     signin,
-    signup
+    signup,
+    authState
 };
 
-export const authenticatedRoutes = {
+const authenticatedRoutes = {
     profile,
     dialogs,
     dialog,
     friend,
     signout,
     message
+};
+
+module.exports = {
+    fetchOptions,
+    authenticatedRoutes, notAuthenticatedRoutes,
+    authNav, notAuthNav
 };

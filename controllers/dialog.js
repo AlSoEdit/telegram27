@@ -1,10 +1,16 @@
 'use strict';
 
-const { ADD_MESSAGE } = require('../views/store/actions/dialog');
+const { ADD_MESSAGE, setResponseText } = require('../views/store/actions');
 const Dialog = require('../models/dialog');
 const User = require('../models/user');
 const WebSocket = require('ws');
 const { BadRequestError, NotFoundError } = require('../libs/requestErrors');
+
+function sendErrorResponseText(sock, text) {
+    sock.send(JSON.stringify(
+        setResponseText({ text, isError: true })
+    ));
+}
 
 async function addMessage(req, res, next) {
     const { id, text } = req.body;
@@ -19,41 +25,42 @@ async function addMessage(req, res, next) {
     }
 }
 
-async function wsAddMessage(sock, req, clients) {
-    const { user } = req.session.passport;
-    if (!user) {
-        return sock.close();
+async function wsDialog(action, sock, clients) {
+    switch (action.type) {
+    case ADD_MESSAGE: {
+        await wsAddMessage(action, sock, clients);
+        break;
     }
+    default:
+        return;
+    }
+}
 
-    sock.user = user;
+async function wsAddMessage(action, sock, clients) {
+    const { text } = action.payload.message;
+    const { id } = action.payload;
+    const dialog = await Dialog.findById(id);
 
-    sock.on('message', async message => {
-        const action = JSON.parse(message);
-        const { text } = action.payload.message;
-        const { dialogId } = action.payload;
-        const dialog = await Dialog.findById(dialogId);
+    const participants = dialog
+        .toObject()
+        .participants
+        .map(p => p.id.toString('hex'));
 
-        let { participants } = dialog.toObject();
-        participants = participants.map(p => p.id.toString('hex'));
+    try {
+        await dialog.addMessage({ text, author: await User.findById(sock.user) });
 
-        switch (action.type) {
-        case ADD_MESSAGE:
-            await dialog.addMessage({ text, author: await User.findById(user) });
-            clients.forEach(client => {
+        clients
+            .filter(client => {
                 const isParticipant = participants.includes(client.user);
                 const isOpen = client.readyState === WebSocket.OPEN;
-                const isDifferentUsers = client.user !== sock.user;
+                const notMessageSender = client.user !== sock.user;
 
-                if (isOpen && isParticipant && isDifferentUsers) {
-                    client.send(message);
-                }
-            });
-
-            break;
-        default:
-            return;
-        }
-    });
+                return isOpen && isParticipant && notMessageSender;
+            })
+            .forEach(client => client.send(JSON.stringify(action)));
+    } catch (err) {
+        sendErrorResponseText(sock, err.message);
+    }
 }
 
 async function getById(req, res, next) {
@@ -76,7 +83,7 @@ async function getByUser(req, res, next) {
 
 module.exports = {
     addMessage,
-    wsAddMessage,
+    wsDialog,
     getById,
     getByUser
 };

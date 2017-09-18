@@ -12,7 +12,7 @@ export default function (state = [], action) {
         );
     case ADD_MESSAGE:
         return state.map(d =>
-            d.id === action.payload.dialogId
+            d.id === action.payload.id
                 ? Object.assign({}, d, { messages : [...d.messages, action.payload.message] })
                 : d
         );

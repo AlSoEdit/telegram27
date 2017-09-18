@@ -4,21 +4,21 @@ import { connect } from 'react-redux';
 import { makeRequest } from '../actions/request';
 import App from '../../components/App/App';
 
-const requestData = {
-    url: '/authState',
-    method: 'get'
-};
+import { notAuthenticatedRoutes } from '../../../constants/routes';
+const { authState } = notAuthenticatedRoutes;
 
 function mapStateToProps(state) {
+    const { user, responseText } = state;
+
     return {
-        user: state.user,
-        errorText: state.errorText
+        user,
+        responseText
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        onMount: () => dispatch(makeRequest(requestData))
+        onMount: () => dispatch(makeRequest(authState))
     };
 }
 
